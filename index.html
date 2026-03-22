@@ -503,7 +503,7 @@
       <h3>EcoMapa</h3>
       <p>Reciclagem e sustentabilidade para um futuro melhor.</p>
       <div class="contato-links">
-        <a onclick="window.location.href='mailto:ecooponto@gmail.com'" class="contato-link" style="cursor:pointer;"><i class="fas fa-envelope"></i><span>ecooponto@gmail.com</span></a>
+        <a id="emailLink" class="contato-link" style="cursor:pointer;"><i class="fas fa-envelope"></i><span id="emailSpan">ecooponto&#64;gmail.com</span></a>
         <a href="https://instagram.com/ecomapa_oficial" target="_blank" rel="noopener noreferrer" class="contato-link"><i class="fab fa-instagram"></i><span>@ecomapa_oficial</span></a>
       </div>
     </div>
@@ -623,40 +623,33 @@ for (var fi=0;fi<filtrosBtns.length;fi++) {
   });
 }
 
-/* ======== USUARIOS POR IP UNICO ======== */
+/* ======== USUARIOS ALCANCADOS - CONTADOR ONLINE ======== */
 window.addEventListener("load", function() {
-  try {
-    /* Gera fingerprint unico baseado em caracteristicas do dispositivo */
-    var fp = [
-      navigator.userAgent,
-      navigator.language,
-      screen.width + "x" + screen.height,
-      screen.colorDepth,
-      new Date().getTimezoneOffset()
-    ].join("|");
+  var elStat = document.getElementById("statUsuarios");
+  var jaContou = false;
+  try { jaContou = !!localStorage.getItem("ecomapa_contado_eco92afd9"); } catch(e) {}
 
-    /* Hash simples para criar ID unico */
-    var hash = 0;
-    for (var ci = 0; ci < fp.length; ci++) {
-      hash = ((hash << 5) - hash) + fp.charCodeAt(ci);
-      hash |= 0;
-    }
-    var deviceId = "dev_" + Math.abs(hash);
+  var url = jaContou
+    ? "https://api.counterapi.dev/v1/eco92afd9f466774618/alcance"
+    : "https://api.counterapi.dev/v1/eco92afd9f466774618/alcance/up";
 
-    /* Registra dispositivos unicos */
-    var chaveDevs = "ecomapa_devs";
-    var devs = {};
-    try { devs = JSON.parse(localStorage.getItem(chaveDevs) || "{}"); } catch(e2) {}
-    devs[deviceId] = true;
-    localStorage.setItem(chaveDevs, JSON.stringify(devs));
-
-    var total = Object.keys(devs).length;
-    var el = document.getElementById("statUsuarios");
-    if (el) el.textContent = total;
-  } catch(e) {
-    var el2 = document.getElementById("statUsuarios");
-    if (el2) el2.textContent = "1";
-  }
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var val = d && (d.count !== undefined ? d.count : d.value);
+      if (elStat && val !== undefined) elStat.textContent = val;
+      if (!jaContou) {
+        try { localStorage.setItem("ecomapa_contado_eco92afd9", "1"); } catch(e) {}
+      }
+    })
+    .catch(function(){
+      /* Fallback: usa localStorage local se API falhar */
+      try {
+        var u = parseInt(localStorage.getItem("ecomapa_u")||"0");
+        if (!jaContou) { u++; localStorage.setItem("ecomapa_u", u); }
+        if (elStat) elStat.textContent = u;
+      } catch(e2) { if (elStat) elStat.textContent = "1"; }
+    });
 });
 
 /* ======== MODAL ======== */
@@ -952,6 +945,11 @@ if ("IntersectionObserver" in window) {
 
 /* ======== INIT ======== */
 renderPontos("todos");
+/* email */
+(function(){
+  var el = document.getElementById("emailLink");
+  if (el) el.onclick = function(){ window.open("mai"+"lto:"+"ecooponto"+"@"+"gmail.com"); };
+})();
 </script>
 </body>
 </html>
