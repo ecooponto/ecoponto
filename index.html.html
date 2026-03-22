@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoMapa | Reciclagem e Sustentabilidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --ink:#0e1a10; --forest:#1a4028; --moss:#2d6a4f; --leaf:#52b788;
+      --sage:#95d5b2; --mist:#d8f3dc; --cream:#f8f6f0; --gold:#c9a84c; --white:#ffffff;
+      --shadow:0 4px 24px rgba(26,64,40,0.10);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',Arial,sans-serif; background:var(--cream); color:var(--ink); overflow-x:hidden; line-height:1.6; }
+    .container { max-width:1240px; margin:0 auto; padding:0 24px; }
+    .section { padding:80px 0; }
+    .eyebrow { display:block; font-size:0.75rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--leaf); font-weight:600; margin-bottom:10px; }
+    .heading { font-family:'Playfair Display',Georgia,serif; font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:900; color:var(--forest); line-height:1.2; margin-bottom:12px; }
+    .subtext { color:#5a6b5e; font-size:1rem; line-height:1.7; max-width:500px; }
+
+    /* NAVBAR */
+    .navbar { position:fixed; top:0; left:0; width:100%; z-index:900; transition:background 0.3s,box-shadow 0.3s,padding 0.3s; padding:18px 0; }
+    .navbar.scrolled { background:rgba(248,246,240,0.96); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:0 2px 16px rgba(26,64,40,0.08); padding:12px 0; }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; }
+    .logo { font-family:'Playfair Display',Georgia,serif; font-size:1.5rem; font-weight:900; color:var(--forest); text-decoration:none; display:flex; align-items:center; gap:8px; }
+    .logo-dot { width:9px; height:9px; background:var(--leaf); border-radius:50%; display:inline-block; animation:blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.6;transform:scale(1.5);} }
+    .nav-links { display:flex; list-style:none; gap:28px; align-items:center; }
+    .nav-links a { text-decoration:none; font-size:0.82rem; font-weight:500; letter-spacing:0.07em; text-transform:uppercase; color:var(--forest); transition:color 0.2s; }
+    .nav-links a:hover { color:var(--leaf); }
+    .nav-btn { background:none; border:none; cursor:pointer; font-size:0.82rem; font-weight:500; letter-spacing:0.07em; text-transform:uppercase; color:var(--forest); font-family:'DM Sans',Arial,sans-serif; transition:color 0.2s; padding:0; }
+    .nav-btn:hover { color:var(--leaf); }
+    .mob-btn { background:none; border:none; cursor:pointer; font-family:'Playfair Display',Georgia,serif; font-size:1.8rem; color:var(--mist); transition:color 0.2s; }
+    .nav-cta { background:var(--forest)!important; color:var(--cream)!important; padding:8px 20px!important; border-radius:100px; }
+    .nav-cta:hover { background:var(--moss)!important; color:var(--white)!important; }
+    .hamburger { display:none; background:none; border:none; cursor:pointer; font-size:1.3rem; color:var(--forest); }
+
+    /* MOBILE MENU */
+    .mobile-menu { display:none; position:fixed; inset:0; background:var(--forest); z-index:950; flex-direction:column; align-items:center; justify-content:center; gap:28px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Playfair Display',Georgia,serif; font-size:1.8rem; color:var(--mist); text-decoration:none; }
+    .mobile-menu a:hover { color:var(--leaf); }
+    .mobile-close { position:absolute; top:20px; right:24px; background:none; border:none; color:var(--sage); font-size:1.8rem; cursor:pointer; }
+
+    /* HERO */
+    .hero { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
+    .hero-left { background:var(--forest); padding:120px 56px 64px; display:flex; align-items:flex-end; position:relative; overflow:hidden; }
+    .hero-left::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(ellipse at 25% 25%,rgba(82,183,136,0.12) 0%,transparent 65%); pointer-events:none; }
+    .hero-content { position:relative; z-index:1; }
+    .hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(82,183,136,0.15); border:1px solid rgba(82,183,136,0.3); color:var(--sage); padding:6px 16px; border-radius:100px; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:20px; }
+    .hero-title { font-family:'Playfair Display',Georgia,serif; font-size:clamp(2.2rem,4.5vw,3.8rem); font-weight:900; line-height:1.1; color:var(--white); margin-bottom:20px; }
+    .hero-title em { font-style:normal; color:var(--leaf); }
+    .hero-desc { color:rgba(255,255,255,0.58); font-size:1rem; line-height:1.7; margin-bottom:32px; max-width:400px; }
+    .hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--leaf); color:var(--ink); padding:12px 24px; border-radius:100px; text-decoration:none; font-weight:600; font-size:0.92rem; transition:background 0.25s,transform 0.25s,box-shadow 0.25s; }
+    .btn-primary:hover { background:var(--sage); transform:translateY(-2px); box-shadow:0 10px 28px rgba(82,183,136,0.28); }
+    .btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--sage); border:1px solid rgba(149,213,178,0.35); padding:12px 24px; border-radius:100px; text-decoration:none; font-weight:500; font-size:0.92rem; transition:background 0.25s,border-color 0.25s; }
+    .btn-ghost:hover { background:rgba(149,213,178,0.1); border-color:var(--sage); }
+    .hero-right { background:var(--mist); padding:64px 40px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:16px; position:relative; }
+    .hero-right::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle,rgba(45,106,79,0.07) 1px,transparent 1px); background-size:26px 26px; }
+    @keyframes cardEntrada { from{opacity:0;transform:translateY(40px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes floatAnim { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-7px);} }
+    .stat-card { background:var(--white); border-radius:18px; padding:18px 22px; width:100%; max-width:320px; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow); position:relative; z-index:1; opacity:0; animation:cardEntrada 0.6s ease forwards, floatAnim 4s ease-in-out 1s infinite; }
+    .stat-card:nth-child(1) { animation-delay:0.2s,1s; }
+    .stat-card:nth-child(2) { animation-delay:0.4s,2s; }
+    .stat-card:nth-child(3) { animation-delay:0.6s,3s; }
+    .stat-icon { width:48px; height:48px; background:var(--mist); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:var(--moss); flex-shrink:0; }
+    .stat-value { font-family:'Playfair Display',Georgia,serif; font-size:1.9rem; font-weight:900; color:var(--forest); line-height:1; }
+    .stat-label { font-size:0.78rem; color:#7a8c7e; margin-top:3px; }
+
+    /* SOBRE */
+    .sobre-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    .sobre-card { background:var(--forest); border-radius:28px; padding:48px 40px; color:var(--white); position:relative; overflow:hidden; }
+    .sobre-card::before,.sobre-card::after { content:''; position:absolute; border-radius:50%; pointer-events:none; }
+    .sobre-card::before { width:160px; height:160px; top:-40px; right:-40px; background:rgba(82,183,136,0.1); }
+    .sobre-card::after { width:200px; height:200px; bottom:-60px; left:-40px; background:rgba(82,183,136,0.07); }
+    .sobre-emoji { font-size:3.5rem; margin-bottom:16px; display:block; }
+    .sobre-card h3 { font-family:'Playfair Display',Georgia,serif; font-size:1.5rem; margin-bottom:12px; }
+    .sobre-card p { color:rgba(255,255,255,0.65); line-height:1.7; }
+    .sobre-badge { display:inline-block; background:var(--gold); color:var(--ink); border-radius:14px; padding:10px 18px; font-weight:700; font-size:0.82rem; margin-top:24px; box-shadow:0 6px 20px rgba(201,168,76,0.3); }
+    .sobre-items { display:flex; flex-direction:column; gap:12px; }
+    .sobre-item { display:flex; align-items:flex-start; gap:14px; background:var(--white); border-radius:16px; padding:16px 18px; box-shadow:0 2px 10px rgba(26,64,40,0.05); transition:transform 0.25s,box-shadow 0.25s; }
+    .sobre-item:hover { transform:translateX(5px); box-shadow:0 6px 20px rgba(26,64,40,0.1); }
+    .sobre-item-icon { width:34px; height:34px; background:var(--mist); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--moss); font-size:0.95rem; flex-shrink:0; }
+    .sobre-item strong { display:block; color:var(--forest); font-size:0.92rem; }
+    .sobre-item span { font-size:0.82rem; color:#7a8c7e; }
+
+    /* MAPA */
+    .mapa-section { background:var(--forest); }
+    .mapa-section .heading { color:var(--white); }
+    .mapa-section .eyebrow { color:var(--sage); }
+    .mapa-section .subtext { color:rgba(255,255,255,0.55); }
+    .mapa-grid { display:grid; grid-template-columns:280px 1fr; gap:32px; margin-top:40px; align-items:start; }
+    .mapa-cards { display:flex; flex-direction:column; gap:10px; }
+    .mapa-card { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:16px 18px; display:flex; align-items:center; gap:14px; transition:background 0.25s; }
+    .mapa-card:hover { background:rgba(255,255,255,0.11); }
+    .mapa-card i { font-size:1.3rem; color:var(--leaf); width:22px; flex-shrink:0; }
+    .mapa-card strong { display:block; color:var(--white); font-size:0.88rem; }
+    .mapa-card span { font-size:0.77rem; color:rgba(255,255,255,0.5); }
+    .mapa-visual-box { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:24px; padding:48px 32px; text-align:center; position:relative; overflow:hidden; }
+    .mapa-visual-box::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 40%,rgba(82,183,136,0.07) 0%,transparent 70%); pointer-events:none; }
+    .mapa-visual-box i.big { font-size:4.5rem; color:var(--leaf); opacity:0.75; margin-bottom:16px; display:block; }
+    .mapa-visual-box h3 { font-family:'Playfair Display',Georgia,serif; color:var(--white); font-size:1.25rem; margin-bottom:8px; }
+    .mapa-visual-box p { color:rgba(255,255,255,0.5); font-size:0.88rem; margin-bottom:24px; }
+    .btn-map { display:inline-flex; align-items:center; gap:8px; background:var(--leaf); color:var(--ink); padding:12px 26px; border-radius:100px; font-weight:600; font-size:0.88rem; transition:background 0.25s,transform 0.25s; cursor:pointer; border:none; font-family:'DM Sans',Arial,sans-serif; }
+    .btn-map:hover { background:var(--sage); transform:translateY(-2px); }
+
+    /* RESIDUOS */
+    .residuos-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:18px; margin-top:40px; }
+    .residuo-card { background:var(--white); border-radius:22px; padding:28px 18px; text-align:center; cursor:pointer; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; border:2px solid transparent; box-shadow:0 2px 14px rgba(26,64,40,0.06); position:relative; overflow:hidden; }
+    .residuo-card::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:3px; background:linear-gradient(90deg,var(--leaf),var(--sage)); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
+    .residuo-card:hover { transform:translateY(-7px); box-shadow:0 18px 36px rgba(26,64,40,0.12); border-color:rgba(82,183,136,0.2); }
+    .residuo-card:hover::after { transform:scaleX(1); }
+    .r-icon { width:60px; height:60px; background:var(--mist); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:var(--moss); margin:0 auto 14px; transition:transform 0.3s; }
+    .residuo-card:hover .r-icon { transform:scale(1.1) rotate(-6deg); }
+    .residuo-card h4 { font-family:'Playfair Display',Georgia,serif; font-size:1rem; color:var(--forest); margin-bottom:4px; }
+    .residuo-card p { font-size:0.78rem; color:#7a8c7e; }
+
+    /* VENDA */
+    .venda-section { background:var(--mist); }
+    .venda-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:40px; }
+    .venda-card { background:var(--white); border-radius:24px; padding:32px 24px; box-shadow:0 4px 18px rgba(26,64,40,0.06); transition:transform 0.3s,box-shadow 0.3s; }
+    .venda-card:hover { transform:translateY(-6px); box-shadow:0 16px 36px rgba(26,64,40,0.12); }
+    .venda-card.dark { background:var(--forest); }
+    .v-emoji { font-size:2.8rem; margin-bottom:14px; display:block; }
+    .venda-card h3 { font-family:'Playfair Display',Georgia,serif; font-size:1.2rem; color:var(--forest); margin-bottom:10px; }
+    .venda-card.dark h3 { color:var(--white); }
+    .venda-card p { font-size:0.88rem; color:#5a6b5e; line-height:1.6; }
+    .venda-card.dark p { color:rgba(255,255,255,0.58); }
+    .btn-venda { display:inline-flex; align-items:center; gap:8px; margin-top:20px; background:var(--leaf); color:var(--ink); padding:10px 22px; border-radius:100px; text-decoration:none; font-weight:600; font-size:0.85rem; transition:background 0.25s,transform 0.25s; }
+    .btn-venda:hover { background:var(--sage); transform:translateY(-2px); }
+
+    /* ARTESANATO */
+    .art-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:40px; }
+    .art-card { background:var(--white); border-radius:22px; overflow:hidden; cursor:pointer; box-shadow:0 4px 18px rgba(26,64,40,0.06); transition:transform 0.3s,box-shadow 0.3s; }
+    .art-card:hover { transform:translateY(-6px); box-shadow:0 18px 36px rgba(26,64,40,0.12); }
+    .art-thumb { background:var(--forest); height:170px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .art-thumb::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 80%,rgba(82,183,136,0.2),transparent 65%); }
+    .art-bg-emoji { position:absolute; top:12px; right:14px; font-size:2.2rem; opacity:0.14; }
+    .art-play-btn { width:56px; height:56px; background:rgba(255,255,255,0.14); border:2px solid rgba(255,255,255,0.38); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--white); transition:background 0.25s,border-color 0.25s,transform 0.25s; z-index:1; }
+    .art-card:hover .art-play-btn { background:var(--leaf); border-color:var(--leaf); color:var(--ink); transform:scale(1.1); }
+    .art-body { padding:16px 18px 20px; }
+    .art-tag { display:inline-block; background:var(--mist); color:var(--moss); border-radius:100px; padding:3px 10px; font-size:0.7rem; font-weight:600; margin-bottom:8px; }
+    .art-body h4 { font-family:'Playfair Display',Georgia,serif; font-size:0.98rem; color:var(--forest); margin-bottom:4px; }
+    .art-body p { font-size:0.8rem; color:#7a8c7e; }
+    .art-note { text-align:center; margin-top:20px; font-size:0.85rem; color:#7a8c7e; }
+    .art-note i { color:var(--gold); }
+
+    /* TUTORIAL MODAL */
+    .tutorial-wrap { user-select:none; }
+    .tutorial-steps { position:relative; }
+    .tutorial-step { display:none; animation:stepIn 0.35s ease; }
+    .tutorial-step.active { display:block; }
+    @keyframes stepIn { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }
+    .tutorial-step h4 { font-family:'Playfair Display',Georgia,serif; color:var(--forest); font-size:1rem; margin-bottom:6px; text-align:center; }
+    .tutorial-step p { font-size:0.83rem; color:#5a6b5e; text-align:center; margin-bottom:12px; }
+    .tutorial-step svg { display:block; margin:0 auto; max-width:100%; }
+    .tut-nav { display:flex; align-items:center; justify-content:space-between; margin-top:14px; }
+    .tut-btn { background:var(--forest); color:var(--white); border:none; border-radius:10px; padding:8px 18px; font-family:'DM Sans',Arial,sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer; transition:background 0.2s; }
+    .tut-btn:hover { background:var(--moss); }
+    .tut-btn:disabled { background:#ccc; cursor:default; }
+    .tut-counter { font-size:0.8rem; color:#7a8c7e; }
+    .materiais-box { background:var(--mist); border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:0.82rem; color:var(--forest); }
+    .materiais-box strong { display:block; margin-bottom:4px; }
+
+    /* PONTOS */
+    .filtros { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+    .filtro-btn { padding:7px 18px; border-radius:100px; border:1.5px solid rgba(26,64,40,0.18); background:transparent; cursor:pointer; font-size:0.8rem; font-weight:500; font-family:'DM Sans',Arial,sans-serif; color:var(--forest); transition:background 0.2s,color 0.2s,border-color 0.2s; }
+    .filtro-btn.active,.filtro-btn:hover { background:var(--forest); color:var(--white); border-color:var(--forest); }
+    .pontos-lista { display:flex; flex-direction:column; gap:10px; }
+    .ponto-item { background:var(--white); border-radius:16px; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 2px 10px rgba(26,64,40,0.05); border-left:4px solid transparent; transition:transform 0.22s,box-shadow 0.22s; }
+    .ponto-item:hover { transform:translateX(4px); box-shadow:0 6px 20px rgba(26,64,40,0.1); }
+    .ponto-item[data-tipo="sucata"] { border-left-color:#e07b39; }
+    .ponto-item[data-tipo="reciclagem"] { border-left-color:var(--leaf); }
+    .ponto-item[data-tipo="ecoponto"] { border-left-color:#4a9eca; }
+    .tipo-badge { display:inline-block; font-size:0.68rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; padding:2px 8px; border-radius:100px; margin-bottom:4px; }
+    .badge-sucata { background:#fef0e7; color:#b85010; }
+    .badge-reciclagem { background:var(--mist); color:var(--moss); }
+    .badge-ecoponto { background:#e3f2fd; color:#1565c0; }
+    .ponto-nome { font-weight:600; color:var(--forest); font-size:0.92rem; }
+    .ponto-end { font-size:0.8rem; color:#7a8c7e; margin-top:2px; }
+    .btn-ver-mapa { flex-shrink:0; background:var(--mist); color:var(--moss); border:none; border-radius:12px; padding:8px 14px; font-size:0.8rem; font-weight:600; cursor:pointer; font-family:'DM Sans',Arial,sans-serif; display:inline-flex; align-items:center; gap:5px; transition:background 0.22s,color 0.22s; }
+    .btn-ver-mapa:hover { background:var(--forest); color:var(--white); }
+
+    /* CONTATO */
+    .contato-section { background:var(--forest); }
+    .contato-section .heading { color:var(--white); }
+    .contato-section .eyebrow { color:var(--sage); }
+    .contato-box { max-width:560px; margin:40px auto 0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:28px; padding:40px; text-align:center; }
+    .contato-box h3 { font-family:'Playfair Display',Georgia,serif; color:var(--white); font-size:1.5rem; margin-bottom:6px; }
+    .contato-box > p { color:rgba(255,255,255,0.5); margin-bottom:24px; font-size:0.9rem; }
+    .contato-links { display:flex; flex-direction:column; gap:10px; }
+    .contato-link { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.07); border-radius:14px; padding:14px 18px; color:rgba(255,255,255,0.78); text-decoration:none; transition:background 0.22s,color 0.22s; }
+    .contato-link:hover { background:rgba(255,255,255,0.13); color:var(--white); }
+    .contato-link i { font-size:1.1rem; color:var(--leaf); width:18px; flex-shrink:0; }
+
+    /* GRAFICO */
+    .grafico-section { background:var(--cream); }
+    .grafico-box { background:var(--white); border-radius:24px; padding:32px; box-shadow:var(--shadow); margin-top:40px; }
+    .grafico-titulo { font-family:'Playfair Display',Georgia,serif; font-size:1.1rem; color:var(--forest); margin-bottom:24px; display:flex; align-items:center; gap:8px; }
+    .grafico-barras { display:flex; align-items:flex-end; gap:8px; height:180px; padding-bottom:36px; position:relative; border-bottom:2px solid var(--mist); }
+    .grafico-barra-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+    .grafico-barra { width:100%; border-radius:6px 6px 0 0; background:linear-gradient(180deg,var(--leaf),var(--moss)); transition:opacity 0.2s; min-height:4px; }
+    .grafico-barra:hover { opacity:0.8; }
+    .grafico-barra-val { font-size:0.68rem; font-weight:700; color:var(--forest); }
+    .grafico-barra-mes { font-size:0.65rem; color:#7a8c7e; margin-top:6px; text-align:center; }
+    .grafico-legenda { font-size:0.78rem; color:#7a8c7e; margin-top:16px; text-align:center; }
+    .grafico-nota { font-size:0.75rem; color:#9eaba1; margin-top:8px; text-align:center; font-style:italic; }
+
+    /* FOOTER */
+    footer { background:var(--ink); padding:24px 0; text-align:center; }
+    footer p { color:rgba(255,255,255,0.32); font-size:0.82rem; }
+    footer span { color:var(--leaf); }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(8,18,10,0.85); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--white); border-radius:24px; padding:32px; max-width:520px; width:100%; position:relative; animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); max-height:90vh; overflow-y:auto; }
+    @keyframes popIn { from{transform:scale(0.85) translateY(16px);opacity:0;} to{transform:scale(1) translateY(0);opacity:1;} }
+    .modal-close-btn { position:absolute; top:14px; right:18px; font-size:1.4rem; line-height:1; cursor:pointer; color:#9eaba1; background:none; border:none; }
+    .modal-box h3 { font-family:'Playfair Display',Georgia,serif; font-size:1.3rem; color:var(--forest); margin-bottom:14px; padding-right:24px; }
+    .modal-body { color:#5a6b5e; line-height:1.7; font-size:0.95rem; }
+
+    /* REGISTRO PESO */
+    .preco-badge { display:inline-flex; align-items:center; gap:6px; background:var(--mist); color:var(--moss); border-radius:12px; padding:8px 16px; font-weight:700; font-size:1rem; margin-bottom:14px; }
+    .dica-text { margin-bottom:20px; }
+    .registro-box { background:var(--cream); border-radius:16px; padding:16px; border:1.5px solid rgba(82,183,136,0.25); }
+    .registro-box label { display:block; font-size:0.82rem; font-weight:600; color:var(--forest); margin-bottom:8px; }
+    .registro-step { margin-bottom:12px; }
+    .registro-step label { display:block; font-size:0.78rem; font-weight:600; color:var(--moss); margin-bottom:5px; }
+    .registro-input { width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid rgba(26,64,40,0.15); font-family:'DM Sans',Arial,sans-serif; font-size:0.92rem; color:var(--ink); background:var(--white); outline:none; transition:border-color 0.2s; }
+    .registro-input:focus { border-color:var(--leaf); }
+    .foto-label { display:flex; align-items:center; gap:8px; background:var(--white); border:1.5px dashed rgba(82,183,136,0.4); border-radius:10px; padding:12px; cursor:pointer; font-size:0.82rem; color:var(--moss); font-weight:600; transition:border-color 0.2s; }
+    .foto-label:hover { border-color:var(--leaf); }
+    .foto-label i { font-size:1.2rem; }
+    .foto-preview { display:none; width:100%; max-height:120px; object-fit:cover; border-radius:10px; margin-top:8px; }
+    .btn-registrar { width:100%; background:var(--moss); color:var(--white); border:none; border-radius:10px; padding:12px; font-weight:600; font-size:0.92rem; cursor:pointer; font-family:'DM Sans',Arial,sans-serif; transition:background 0.2s; margin-top:4px; }
+    .btn-registrar:hover { background:var(--forest); }
+    .registro-ok { display:none; color:var(--moss); font-size:0.83rem; margin-top:10px; font-weight:600; text-align:center; }
+
+    .btn-fechar-modal { display:inline-flex; align-items:center; gap:6px; margin-top:20px; background:var(--forest); color:var(--white); border:none; padding:10px 24px; border-radius:100px; cursor:pointer; font-family:'DM Sans',Arial,sans-serif; font-weight:600; font-size:0.88rem; transition:background 0.22s; }
+    .btn-fechar-modal:hover { background:var(--moss); }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(26px); transition:opacity 0.55s ease,transform 0.55s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width:1024px) {
+      .hero { grid-template-columns:1fr; }
+      .hero-left { padding:100px 32px 48px; align-items:flex-start; }
+      .hero-right { padding:32px; flex-direction:row; flex-wrap:wrap; justify-content:center; }
+      .stat-card { max-width:260px; }
+      .sobre-grid { grid-template-columns:1fr; }
+      .mapa-grid { grid-template-columns:1fr; }
+      .venda-grid { grid-template-columns:1fr 1fr; }
+      .art-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:700px) {
+      .nav-links { display:none; }
+      .hamburger { display:block; }
+      .hero-left { padding:90px 20px 40px; }
+      .hero-right { padding:24px 16px; }
+      .stat-card { max-width:100%; }
+      .section { padding:56px 0; }
+      .container { padding:0 16px; }
+      .venda-grid { grid-template-columns:1fr; }
+      .art-grid { grid-template-columns:1fr; }
+      .residuos-grid { grid-template-columns:repeat(2,1fr); }
+      .ponto-item { flex-wrap:wrap; }
+      .sobre-grid { gap:32px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#home" class="logo"><span class="logo-dot"></span>EcoMapa</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><i class="fas fa-bars"></i></button>
+    <ul class="nav-links">
+      <li><button class="nav-btn" onclick="irPara('sobre')">Sobre</button></li>
+      <li><button class="nav-btn" onclick="irPara('mapa')">Mapa</button></li>
+      <li><button class="nav-btn" onclick="irPara('residuos')">Res&#237;duos</button></li>
+      <li><button class="nav-btn" onclick="irPara('venda')">Venda</button></li>
+      <li><button class="nav-btn" onclick="irPara('artesanato')">Artesanato</button></li>
+      <li><button class="nav-btn" onclick="irPara('pontos')">Pontos</button></li>
+      <li><button class="nav-btn" onclick="irPara('grafico')">Alcance</button></li>
+      <li><button class="nav-btn nav-cta" onclick="irPara('contato')">Contato</button></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+  <button class="mob-btn" onclick="irParaMob('sobre')">Sobre</button>
+  <button class="mob-btn" onclick="irParaMob('mapa')">Mapa</button>
+  <button class="mob-btn" onclick="irParaMob('residuos')">Res&#237;duos</button>
+  <button class="mob-btn" onclick="irParaMob('venda')">Venda</button>
+  <button class="mob-btn" onclick="irParaMob('artesanato')">Artesanato</button>
+  <button class="mob-btn" onclick="irParaMob('pontos')">Pontos</button>
+  <button class="mob-btn" onclick="irParaMob('grafico')">Alcance</button>
+  <button class="mob-btn" onclick="irParaMob('contato')">Contato</button>
+</div>
+
+<section id="home" class="hero">
+  <div class="hero-left">
+    <div class="hero-content">
+      <span class="hero-badge"><i class="fas fa-leaf"></i> EcoMapa</span>
+      <h1 class="hero-title">Descarte certo.<br>Ganhe com<br><em>seus res&#237;duos.</em></h1>
+      <p class="hero-desc">Encontre pontos de coleta de recicl&#225;veis perto de voc&#234;, venda materiais e aprenda artesanato sustent&#225;vel.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="irPara('mapa')"><i class="fas fa-map-marked-alt"></i> Ver Mapa</button>
+        <button class="btn-ghost" onclick="irPara('venda')"><i class="fas fa-coins"></i> Vender Res&#237;duos</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-mobile-alt"></i></div>
+      <div><div class="stat-value" id="statUsuarios">1</div><div class="stat-label">Usu&#225;rios alcan&#231;ados</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-recycle"></i></div>
+      <div><div class="stat-value" id="statResiduos">0</div><div class="stat-label">Res&#237;duos coletados (kg)</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-map-pin"></i></div>
+      <div><div class="stat-value">15</div><div class="stat-label">Pontos de coleta</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="sobre" class="section">
+  <div class="container">
+    <div class="sobre-grid">
+      <div class="reveal">
+        <div class="sobre-card">
+          <span class="sobre-emoji">&#127807;</span>
+          <h3>Miss&#227;o EcoMapa</h3>
+          <p>Conectamos pessoas a pontos de coleta, incentivamos a venda de materiais recicl&#225;veis e promovemos o artesanato sustent&#225;vel em nossa regi&#227;o.</p>
+          <span class="sobre-badge">&#9851; Reciclagem que gera renda</span>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:0.12s">
+        <span class="eyebrow">Sobre o EcoMapa</span>
+        <h2 class="heading">Pequenas atitudes, grande impacto</h2>
+        <p class="subtext" style="margin-bottom:24px;">O EcoMapa une tecnologia e consci&#234;ncia ambiental para facilitar o descarte correto e gerar renda a partir dos res&#237;duos recicl&#225;veis.</p>
+        <div class="sobre-items">
+          <div class="sobre-item"><div class="sobre-item-icon"><i class="fas fa-map-marked-alt"></i></div><div><strong>Mapeamento colaborativo</strong><span>15 pontos verificados na regi&#227;o de Jundia&#237;.</span></div></div>
+          <div class="sobre-item"><div class="sobre-item-icon"><i class="fas fa-hand-holding-usd"></i></div><div><strong>Gera&#231;&#227;o de renda</strong><span>Conectamos voc&#234; a sucatas que compram seus materiais.</span></div></div>
+          <div class="sobre-item"><div class="sobre-item-icon"><i class="fas fa-graduation-cap"></i></div><div><strong>Educa&#231;&#227;o ambiental</strong><span>Tutoriais de artesanato passo a passo para toda a fam&#237;lia.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mapa" class="section mapa-section">
+  <div class="container">
+    <span class="eyebrow reveal">Localiza&#231;&#227;o</span>
+    <h2 class="heading reveal">Mapa Interativo</h2>
+    <p class="subtext reveal">Visualize todos os pontos de coleta ativos com informa&#231;&#245;es e rotas.</p>
+    <div class="mapa-grid">
+      <div class="mapa-cards reveal">
+        <div class="mapa-card"><i class="fas fa-map-pin"></i><div><strong>15 pontos ativos</strong><span>Jundia&#237;, V&#225;rzea Paulista e Campo Limpo</span></div></div>
+        <div class="mapa-card"><i class="fas fa-trash-alt"></i><div><strong>Sucatas (12)</strong><span>Compram metais, papel&#227;o, eletr&#244;nicos</span></div></div>
+        <div class="mapa-card"><i class="fas fa-recycle"></i><div><strong>Recicl&#225;veis (1)</strong><span>Coleta seletiva geral</span></div></div>
+        <div class="mapa-card"><i class="fas fa-leaf"></i><div><strong>Ecopontos (3)</strong><span>Coleta municipal em Jundia&#237;</span></div></div>
+      </div>
+      <div class="mapa-visual-box reveal" style="transition-delay:0.14s">
+        <i class="fas fa-map big"></i>
+        <h3>Mapa Colaborativo EcoMapa</h3>
+        <p>Clique para abrir o mapa com todos os pontos de coleta da regi&#227;o.</p>
+        <button class="btn-map" id="btnAbrirMapa"><i class="fas fa-external-link-alt"></i> Abrir no Google Maps</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="residuos" class="section">
+  <div class="container">
+    <span class="eyebrow reveal">Descarte correto</span>
+    <h2 class="heading reveal">O que posso reciclar?</h2>
+    <p class="subtext reveal">Clique em cada categoria para ver pre&#231;os e registrar o que voc&#234; vendeu.</p>
+    <div class="residuos-grid">
+      <div class="residuo-card reveal" data-titulo="Pl&#225;stico" data-preco="R$ 0,50 a R$ 1,20 / kg" data-dica="Pl&#225;sticos limpos e secos: garrafas PET, embalagens, potes. Retire r&#243;tulos quando poss&#237;vel.">
+        <div class="r-icon"><i class="fas fa-recycle"></i></div><h4>Pl&#225;stico</h4><p>PET, PEAD, embalagens</p>
+      </div>
+      <div class="residuo-card reveal" style="transition-delay:.05s" data-titulo="Papel e Papel&#227;o" data-preco="R$ 0,30 a R$ 0,60 / kg" data-dica="Pap&#233;is n&#227;o gordurosos: jornais, revistas, papel&#227;o. Evite papel higi&#234;nico.">
+        <div class="r-icon"><i class="fas fa-newspaper"></i></div><h4>Papel</h4><p>Jornais, papel&#227;o</p>
+      </div>
+      <div class="residuo-card reveal" style="transition-delay:.1s" data-titulo="Vidro" data-preco="R$ 0,10 a R$ 0,25 / kg" data-dica="Garrafas e potes de vidro. Nunca quebre antes de descartar.">
+        <div class="r-icon"><i class="fas fa-wine-bottle"></i></div><h4>Vidro</h4><p>Garrafas, potes</p>
+      </div>
+      <div class="residuo-card reveal" style="transition-delay:.15s" data-titulo="Metal / Alum&#237;nio" data-preco="R$ 3,00 a R$ 6,00 / kg" data-dica="Latas de alum&#237;nio e a&#231;o. O alum&#237;nio &#233; o mais valioso!">
+        <div class="r-icon"><i class="fas fa-tools"></i></div><h4>Metal</h4><p>Latas, alum&#237;nio</p>
+      </div>
+      <div class="residuo-card reveal" style="transition-delay:.2s" data-titulo="Eletr&#244;nicos" data-preco="Consulte o ecoponto local" data-dica="Cont&#234;m metais pesados. Leve a ecopontos espec&#237;ficos.">
+        <div class="r-icon"><i class="fas fa-laptop"></i></div><h4>Eletr&#244;nicos</h4><p>Celulares, pilhas</p>
+      </div>
+      <div class="residuo-card reveal" style="transition-delay:.25s" data-titulo="&#211;leo de Cozinha" data-preco="Descarte gratuito nos ecopontos" data-dica="Armazene em garrafas PET fechadas e leve a um ecoponto.">
+        <div class="r-icon"><i class="fas fa-oil-can"></i></div><h4>&#211;leo de Cozinha</h4><p>&#211;leo usado</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="venda" class="section venda-section">
+  <div class="container">
+    <span class="eyebrow reveal">Lucre com res&#237;duos</span>
+    <h2 class="heading reveal">Venda seus Materiais</h2>
+    <p class="subtext reveal">Muitos materiais recicl&#225;veis t&#234;m valor de mercado. Separe, pese e negocie com os pontos listados.</p>
+    <div class="venda-grid">
+      <div class="venda-card dark reveal">
+        <span class="v-emoji">&#128176;</span>
+        <h3>Ganhe dinheiro</h3>
+        <p>Alum&#237;nio, cobre, pl&#225;stico e papel&#227;o t&#234;m valor comercial. Consulte pre&#231;os nos pontos de compra.</p>
+        <button class="btn-venda" onclick="irPara('pontos')"><i class="fas fa-map-pin"></i> Ver pontos de compra</button>
+      </div>
+      <div class="venda-card reveal" style="transition-delay:.1s">
+        <span class="v-emoji">&#128200;</span>
+        <h3>Pre&#231;os atrativos</h3>
+        <p>O alum&#237;nio &#233; o mais valorizado. Papel&#227;o e cobre tamb&#233;m t&#234;m boa cota&#231;&#227;o nas sucatas da regi&#227;o.</p>
+      </div>
+      <div class="venda-card reveal" style="transition-delay:.2s">
+        <span class="v-emoji">&#129309;</span>
+        <h3>Parcerias locais</h3>
+        <p>Todos os 12 pontos de sucata listados compram materiais. Entre em contato ou visite pessoalmente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTESANATO -->
+<section id="artesanato" class="section">
+  <div class="container">
+    <span class="eyebrow reveal">Crie &amp; Inspire</span>
+    <h2 class="heading reveal">Artesanato Sustent&#225;vel</h2>
+    <p class="subtext reveal">Tutoriais passo a passo para toda a fam&#237;lia. Clique para ver como fazer!</p>
+    <div class="art-grid">
+      <div class="art-card reveal" data-tutorial="corrida">
+        <div class="art-thumb">
+          <div class="art-play-btn"><i class="fas fa-paint-brush"></i></div>
+          <span class="art-bg-emoji">&#127955;</span>
+        </div>
+        <div class="art-body">
+          <span class="art-tag">Jogo</span>
+          <h4>Jogo de corrida com tampinhas</h4>
+          <p>Tampinhas + caixa de ovos + dado</p>
+        </div>
+      </div>
+      <div class="art-card reveal" style="transition-delay:.1s" data-youtube="https://youtube.com/shorts/RvwX9z6k5gM">
+        <div class="art-thumb">
+          <div class="art-play-btn"><i class="fab fa-youtube"></i></div>
+          <span class="art-bg-emoji">&#129302;</span>
+        </div>
+        <div class="art-body">
+          <span class="art-tag">Brinquedo</span>
+          <h4>Rob&#244; com garrafa PET</h4>
+          <p>Ver tutorial no YouTube</p>
+        </div>
+      </div>
+      <div class="art-card reveal" style="transition-delay:.2s" data-youtube="https://youtube.com/shorts/E4xW1pe3Ayg">
+        <div class="art-thumb">
+          <div class="art-play-btn"><i class="fab fa-youtube"></i></div>
+          <span class="art-bg-emoji">&#128663;</span>
+        </div>
+        <div class="art-body">
+          <span class="art-tag">Brinquedo</span>
+          <h4>Carrinho de garrafa PET</h4>
+          <p>Ver tutorial no YouTube</p>
+        </div>
+      </div>
+    </div>
+    <p class="art-note reveal" style="transition-delay:.25s">
+      <i class="fas fa-star"></i> Quer compartilhar seu artesanato? Envie uma foto para o nosso e-mail!
+    </p>
+  </div>
+</section>
+
+<section id="pontos" class="section">
+  <div class="container">
+    <span class="eyebrow reveal">Locais verificados</span>
+    <h2 class="heading reveal">Pontos de Coleta</h2>
+    <p class="subtext reveal" style="margin-bottom:28px;">15 locais em Jundia&#237;, V&#225;rzea Paulista e Campo Limpo Paulista.</p>
+    <div class="filtros reveal">
+      <button class="filtro-btn active" data-filtro="todos">Todos (15)</button>
+      <button class="filtro-btn" data-filtro="sucata">Sucatas (12)</button>
+      <button class="filtro-btn" data-filtro="reciclagem">Recicl&#225;veis (1)</button>
+      <button class="filtro-btn" data-filtro="ecoponto">Ecopontos (3)</button>
+    </div>
+    <div class="pontos-lista" id="pontosLista"></div>
+  </div>
+</section>
+
+<section id="contato" class="section contato-section">
+  <div class="container" style="text-align:center;">
+    <span class="eyebrow reveal">Fale conosco</span>
+    <h2 class="heading reveal" style="color:var(--white);">Contato</h2>
+    <div class="contato-box reveal">
+      <h3>EcoMapa</h3>
+      <p>Reciclagem e sustentabilidade para um futuro melhor.</p>
+      <div class="contato-links">
+        <a href="/cdn-cgi/l/email-protection#dbbeb8b4b4abb4b5afb49bbcb6bab2b7f5b8b4b6" class="contato-link"><i class="fas fa-envelope"></i><span><span class="__cf_email__" data-cfemail="98fdfbf7f7e8f7f6ecf7d8fff5f9f1f4b6fbf7f5">[email&#160;protected]</span></span></a>
+        <a href="https://instagram.com/ecomapa_oficial" target="_blank" rel="noopener noreferrer" class="contato-link"><i class="fab fa-instagram"></i><span>@ecomapa_oficial</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRAFICO -->
+<section id="grafico" class="section grafico-section">
+  <div class="container">
+    <span class="eyebrow reveal">Estat&#237;sticas</span>
+    <h2 class="heading reveal">Alcance Mensal do Site</h2>
+    <p class="subtext reveal">Acompanhe o crescimento da comunidade EcoMapa mês a mês.</p>
+    <div class="grafico-box reveal" style="transition-delay:0.1s">
+      <div class="grafico-titulo"><i class="fas fa-chart-bar" style="color:var(--leaf)"></i> Visitantes por mês — 2026</div>
+      <div class="grafico-barras" id="graficoBars"></div>
+      <p class="grafico-legenda">&#128200; Os dados são acumulados a partir das visitas registradas no próprio navegador dos usuários.</p>
+      <p class="grafico-nota">* O gráfico reflete visitas únicas salvas localmente. Cada novo dispositivo conta como uma visita.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 <span>EcoMapa</span> &mdash; Mapeando solu&#231;&#245;es sustent&#225;veis para um futuro melhor &#9851;</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="modalCloseX">&times;</button>
+    <h3 id="modalTitulo"></h3>
+    <div class="modal-body" id="modalBody"></div>
+    <button class="btn-fechar-modal" id="modalCloseBtn">Fechar</button>
+  </div>
+</div>
+
+<input type="file" id="fotoInput" accept="image/*" capture="environment" style="display:none">
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ======== NAVEGACAO SEM LINKS ======== */
+function irPara(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:"smooth"});
+}
+function irParaMob(id) {
+  var mm = document.getElementById("mobileMenu");
+  if (mm) mm.classList.remove("open");
+  setTimeout(function(){ irPara(id); }, 150);
+}
+
+/* ======== DADOS PONTOS ======== */
+var pontos = [
+  { nome:"Sucatas Prado",               endereco:"Vila Constanca (Botujuru), Campo Limpo Paulista - SP, 13238-470",                tipo:"sucata" },
+  { nome:"Coferpa Reciclaveis",          endereco:"R. Bragantina, 227 - Jardim Europa, Campo Limpo Paulista - SP, 13232-099",       tipo:"reciclagem" },
+  { nome:"Comercio de Ferros e Metais T",endereco:"Av. Marginal Esquerda, 2304 - Parque Res. California, Campo Limpo Paulista - SP",tipo:"sucata" },
+  { nome:"Comercio Ferros Metais T",     endereco:"Av. Pres. Washington Luis, 564 - Vila Tavares, Campo Limpo Paulista - SP",       tipo:"sucata" },
+  { nome:"Colonia Sucatas",              endereco:"Av. Marginal do Rio Jundiai - Area Industrial, Varzea Paulista - SP",            tipo:"sucata" },
+  { nome:"Ferro Velho Zezinho",          endereco:"R. Sao Jose do Rio Pardo, 204 - Jardim Paulista, Varzea Paulista - SP",         tipo:"sucata" },
+  { nome:"Camaleao Comercio Sucatas",    endereco:"Rod. Adail Eduardo Gut, 1000 - Jardim Alessandra, Varzea Paulista - SP",        tipo:"sucata" },
+  { nome:"C.S. Sucatas - Prifer",        endereco:"Av. Marginal do Rio Jundiai, 350 - Jardim Paulista, Varzea Paulista - SP",      tipo:"sucata" },
+  { nome:"Primavera Sucatas",            endereco:"R. Caetano Jose de Oliveira, 64 - Jardim Primavera, Varzea Paulista - SP",      tipo:"sucata" },
+  { nome:"Buriti Sucatas",               endereco:"R. Olivio Moro, 258 - Jardim Olivio Moro, Varzea Paulista - SP",               tipo:"sucata" },
+  { nome:"Maceio Sucatas",               endereco:"R. Maceio, 44 - Vila M Genoveva, Jundiai - SP, 13203-010",                      tipo:"sucata" },
+  { nome:"Portuga Comercio de Sucatas",  endereco:"Av. Humberto Cereser, 233 - Jundiai Mirim, Jundiai - SP, 13216-700",           tipo:"sucata" },
+  { nome:"Ecoponto Morada das Vinhas",   endereco:"R. Uva Niagara, 951 - Bairro dos Fernandes, Jundiai - SP, 13214-699",          tipo:"ecoponto" },
+  { nome:"Ecoponto Residencial Jundiai", endereco:"Av. Eunice Cavalcante de Souza Queiroz - Jundiai - SP, 13212-463",             tipo:"ecoponto" },
+  { nome:"Eco Ponto - Jardim do Lago",   endereco:"R. Geraldo Santos, 195 - Jardim do Lago, Jundiai - SP, 13203-650",             tipo:"ecoponto" }
+];
+var badgeLabel = { sucata:"Sucata", reciclagem:"Reciclavel", ecoponto:"Ecoponto" };
+
+/* ======== PESO ======== */
+function getPeso() { try { return parseFloat(localStorage.getItem("ecomapa_peso")||"0"); } catch(e){return 0;} }
+function setPeso(v) {
+  try { localStorage.setItem("ecomapa_peso", v); } catch(e){}
+  var el = document.getElementById("statResiduos");
+  if (el) el.textContent = (v%1===0) ? v : v.toFixed(2);
+}
+/* ZERAR peso salvo */
+try { localStorage.removeItem("ecomapa_peso"); } catch(e){}
+setPeso(0);
+
+/* ======== PONTOS ======== */
+function renderPontos(filtro) {
+  var lista = filtro==="todos" ? pontos : pontos.filter(function(p){ return p.tipo===filtro; });
+  var html = "";
+  for (var i=0;i<lista.length;i++) {
+    var p = lista[i];
+    var q = encodeURIComponent(p.nome+" "+p.endereco);
+    var mapsUrl = "https://www.google.com/maps/search/?api=1&query="+q;
+    html += '<div class="ponto-item" data-tipo="'+p.tipo+'">' +
+      '<div>' +
+        '<span class="tipo-badge badge-'+p.tipo+'">'+badgeLabel[p.tipo]+'</span>' +
+        '<div class="ponto-nome">'+p.nome+'</div>' +
+        '<div class="ponto-end">'+p.endereco+'</div>' +
+      '</div>' +
+      '<button class="btn-ver-mapa" data-url="'+mapsUrl+'">' +
+        '<i class="fas fa-map"></i> Ver no Mapa' +
+      '</button>' +
+    '</div>';
+  }
+  document.getElementById("pontosLista").innerHTML = html;
+  /* bind botoes mapa */
+  var btns = document.querySelectorAll(".btn-ver-mapa");
+  for (var b=0;b<btns.length;b++) {
+    btns[b].addEventListener("click", function() {
+      var url = this.getAttribute("data-url");
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
+  }
+}
+
+var filtrosBtns = document.querySelectorAll(".filtro-btn");
+for (var fi=0;fi<filtrosBtns.length;fi++) {
+  filtrosBtns[fi].addEventListener("click", function() {
+    for (var j=0;j<filtrosBtns.length;j++) filtrosBtns[j].classList.remove("active");
+    this.classList.add("active");
+    renderPontos(this.getAttribute("data-filtro"));
+  });
+}
+
+/* ======== USUARIOS ======== */
+window.addEventListener("load", function() {
+  try {
+    var u = parseInt(localStorage.getItem("ecomapa_u")||"0")+1;
+    localStorage.setItem("ecomapa_u", u);
+    var el = document.getElementById("statUsuarios");
+    if (el) el.textContent = u;
+  } catch(e) {
+    var el2 = document.getElementById("statUsuarios");
+    if (el2) el2.textContent = "1";
+  }
+});
+
+/* ======== MODAL ======== */
+function abrirModal(titulo, corpo) {
+  document.getElementById("modalTitulo").textContent = titulo;
+  document.getElementById("modalBody").innerHTML = corpo;
+  document.getElementById("modal").classList.add("open");
+}
+function fecharModal() {
+  document.getElementById("modal").classList.remove("open");
+  document.getElementById("modalBody").innerHTML = "";
+}
+document.getElementById("modalCloseX").addEventListener("click", fecharModal);
+document.getElementById("modalCloseBtn").addEventListener("click", fecharModal);
+document.getElementById("modal").addEventListener("click", function(e){ if(e.target===this) fecharModal(); });
+
+/* ======== RESIDUOS - modal com foto + local + peso ======== */
+var fotoDataUrl = null;
+var rcards = document.querySelectorAll(".residuo-card");
+for (var ri=0;ri<rcards.length;ri++) {
+  rcards[ri].addEventListener("click", function() {
+    var titulo = this.getAttribute("data-titulo");
+    var preco  = this.getAttribute("data-preco");
+    var dica   = this.getAttribute("data-dica");
+    fotoDataUrl = null;
+
+    var corpo =
+      '<div class="preco-badge"><i class="fas fa-tag"></i> '+preco+'</div>' +
+      '<p class="dica-text">'+dica+'</p>' +
+      '<div class="registro-box">' +
+        '<label><i class="fas fa-clipboard-check"></i> Registrar venda / descarte:</label>' +
+        '<div class="registro-step">' +
+          '<label>&#128247; Foto do material:</label>' +
+          '<label class="foto-label" for="fotoInputModal"><i class="fas fa-camera"></i> Tirar foto ou escolher da galeria</label>' +
+          '<input type="file" id="fotoInputModal" accept="image/*" capture="environment" style="display:none">' +
+          '<img id="fotoPreview" class="foto-preview">' +
+        '</div>' +
+        '<div class="registro-step">' +
+          '<label>&#128205; Local de descarte:</label>' +
+          '<select class="registro-input" id="localSelect">' +
+            '<option value="">-- Selecione um ponto --</option>' +
+            pontos.map(function(p){ return '<option>'+p.nome+'</option>'; }).join("") +
+            '<option value="outro">Outro local</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="registro-step">' +
+          '<label>&#9878; Quantidade (kg):</label>' +
+          '<input class="registro-input" type="number" id="pesoInput" min="0.01" step="0.01" placeholder="Ex: 2.5">' +
+        '</div>' +
+        '<button class="btn-registrar" onclick="registrarPeso()"><i class="fas fa-check"></i> Confirmar registro</button>' +
+        '<div class="registro-ok" id="registroOk"><i class="fas fa-check-circle"></i> Registrado com sucesso!</div>' +
+      '</div>';
+
+    abrirModal(titulo, corpo);
+
+    /* foto listener */
+    setTimeout(function() {
+      var inp = document.getElementById("fotoInputModal");
+      var prev = document.getElementById("fotoPreview");
+      if (inp) {
+        inp.addEventListener("change", function() {
+          if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              fotoDataUrl = e.target.result;
+              prev.src = fotoDataUrl;
+              prev.style.display = "block";
+            };
+            reader.readAsDataURL(this.files[0]);
+          }
+        });
+      }
+    }, 100);
+  });
+}
+
+function registrarPeso() {
+  var foto  = fotoDataUrl;
+  var local = document.getElementById("localSelect");
+  var peso  = document.getElementById("pesoInput");
+  var ok    = document.getElementById("registroOk");
+
+  if (!foto) { alert("Por favor, adicione uma foto do material."); return; }
+  if (!local || !local.value) { alert("Por favor, selecione o local de descarte."); return; }
+  if (!peso || !peso.value || parseFloat(peso.value) <= 0) { alert("Por favor, informe a quantidade em kg."); return; }
+
+  var val  = parseFloat(peso.value);
+  var novo = Math.round((getPeso()+val)*100)/100;
+  setPeso(novo);
+  peso.value = "";
+  if (ok) { ok.style.display="block"; setTimeout(function(){ ok.style.display="none"; fecharModal(); }, 2000); }
+}
+
+/* ======== TUTORIAIS SVG ======== */
+var tutoriais = {
+  corrida: {
+    titulo: "Jogo de Corrida com Tampinhas",
+    materiais: "Tampinhas de garrafa PET coloridas, 1 caixa de ovos, papelão, canetinha ou tinta, cola, tesoura, 1 dado.",
+    passos: [
+      {
+        titulo: "Preparar a base",
+        desc: "Pegue um pedaço de papelão grande. Desenhe uma pista de corrida com canetinha — pode ser reta ou com curvas!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="20" y="40" width="260" height="100" rx="14" fill="#c8e6c9" stroke="#2d6a4f" stroke-width="2"/><path d="M50 90 Q100 50 150 90 Q200 130 250 90" stroke="#2d6a4f" stroke-width="3" fill="none" stroke-dasharray="10,6"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Desenhe a pista no papelão</text></svg>'
+      },
+      {
+        titulo: "Criar o tabuleiro com caixa de ovos",
+        desc: "Use a caixa de ovos como suporte da pista — ela serve como estrutura para obstáculos ou encaixes das tampinhas. Cole no papelão.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="30" y="50" width="240" height="80" rx="8" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/><ellipse cx="70" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="110" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="150" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="190" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="230" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Caixa de ovos = suporte da pista</text></svg>'
+      },
+      {
+        titulo: "Fazer os carros (tampinhas)",
+        desc: "Cada jogador escolhe uma cor de tampinha. Pinte ou decore com canetinha para diferenciar. Cada cor = um time!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><circle cx="75" cy="90" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/><circle cx="150" cy="90" r="30" fill="#3498db" stroke="#2980b9" stroke-width="3"/><circle cx="225" cy="90" r="30" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/><circle cx="75" cy="90" r="16" fill="#c0392b" opacity="0.4"/><circle cx="150" cy="90" r="16" fill="#2980b9" opacity="0.4"/><circle cx="225" cy="90" r="16" fill="#27ae60" opacity="0.4"/><text x="75" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">1</text><text x="150" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">2</text><text x="225" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">3</text><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Tampinhas coloridas = carros</text></svg>'
+      },
+      {
+        titulo: "Montar e jogar com o dado",
+        desc: "Posicione as tampinhas na largada. Em cada turno, o jogador lança o dado e avança o número de casas correspondente. Quem chegar primeiro na chegada vence!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="15" y="50" width="180" height="80" rx="8" fill="#c8e6c9" stroke="#2d6a4f" stroke-width="2"/><circle cx="55" cy="90" r="16" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/><circle cx="105" cy="85" r="16" fill="#3498db" stroke="#2980b9" stroke-width="2"/><circle cx="155" cy="95" r="16" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/><rect x="220" y="55" width="65" height="65" rx="12" fill="white" stroke="#2d6a4f" stroke-width="2.5"/><circle cx="236" cy="71" r="5" fill="#1a4028"/><circle cx="252" cy="71" r="5" fill="#1a4028"/><circle cx="268" cy="71" r="5" fill="#1a4028"/><circle cx="236" cy="88" r="5" fill="#1a4028"/><circle cx="268" cy="88" r="5" fill="#1a4028"/><circle cx="236" cy="105" r="5" fill="#1a4028"/><circle cx="252" cy="105" r="5" fill="#1a4028"/><circle cx="268" cy="105" r="5" fill="#1a4028"/><text x="110" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Lance o dado e avance!</text></svg>'
+      }
+    ]
+  },
+  robo: {
+    titulo: "Robô com Garrafa PET",
+    materiais: "1 garrafa PET pequena, tampinhas coloridas, cola quente, tinta (prata ou cinza), olhinhos de EVA, arame fino (opcional).",
+    passos: [
+      {
+        titulo: "Prepare a garrafa",
+        desc: "Lave bem a garrafa PET e deixe secar. Ela será o corpo do robô. Deixe a tampa fechada.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="110" y="50" width="80" height="110" rx="20" fill="#b2dfdb" stroke="#00796b" stroke-width="3"/><rect x="125" y="30" width="50" height="30" rx="10" fill="#80cbc4" stroke="#00796b" stroke-width="2"/><rect x="138" y="20" width="24" height="16" rx="4" fill="#4db6ac" stroke="#00796b" stroke-width="2"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Garrafa PET limpa e seca</text></svg>'
+      },
+      {
+        titulo: "Pinte de prata",
+        desc: "Pinte a garrafa com tinta prata ou cinza para ficar com cara de robô metálico. Deixe secar completamente.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="110" y="50" width="80" height="110" rx="20" fill="#90a4ae" stroke="#607d8b" stroke-width="3"/><rect x="125" y="30" width="50" height="30" rx="10" fill="#b0bec5" stroke="#607d8b" stroke-width="2"/><rect x="138" y="20" width="24" height="16" rx="4" fill="#78909c" stroke="#607d8b" stroke-width="2"/><path d="M220 60 L240 80 L235 85" stroke="#52b788" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="244" cy="58" r="18" fill="#52b788" opacity="0.15" stroke="#52b788" stroke-width="1.5"/><text x="244" y="63" text-anchor="middle" font-size="18">&#127773;</text><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Pinte e aguarde secar</text></svg>'
+      },
+      {
+        titulo: "Cole os olhos e boca",
+        desc: "Cole dois olhinhos de EVA ou tampinhas pequenas como olhos. Desenhe a boca com caneta permanente ou cole pedaços de EVA.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="110" y="50" width="80" height="110" rx="20" fill="#90a4ae" stroke="#607d8b" stroke-width="3"/><rect x="125" y="30" width="50" height="30" rx="10" fill="#b0bec5" stroke="#607d8b" stroke-width="2"/><rect x="138" y="20" width="24" height="16" rx="4" fill="#78909c" stroke="#607d8b" stroke-width="2"/><circle cx="136" cy="75" r="10" fill="white" stroke="#607d8b" stroke-width="2"/><circle cx="164" cy="75" r="10" fill="white" stroke="#607d8b" stroke-width="2"/><circle cx="136" cy="75" r="5" fill="#1a4028"/><circle cx="164" cy="75" r="5" fill="#1a4028"/><rect x="130" y="95" width="40" height="8" rx="3" fill="#607d8b"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Olhos e boca colados!</text></svg>'
+      },
+      {
+        titulo: "Adicione os bra&#231;os",
+        desc: "Cole tampinhas coloridas nas laterais como botões do robô. Se quiser, adicione aramezinhos dobrados como braços!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="110" y="50" width="80" height="110" rx="20" fill="#90a4ae" stroke="#607d8b" stroke-width="3"/><rect x="125" y="30" width="50" height="30" rx="10" fill="#b0bec5" stroke="#607d8b" stroke-width="2"/><rect x="138" y="20" width="24" height="16" rx="4" fill="#78909c" stroke="#607d8b" stroke-width="2"/><circle cx="136" cy="75" r="10" fill="white" stroke="#607d8b" stroke-width="2"/><circle cx="164" cy="75" r="10" fill="white" stroke="#607d8b" stroke-width="2"/><circle cx="136" cy="75" r="5" fill="#1a4028"/><circle cx="164" cy="75" r="5" fill="#1a4028"/><rect x="130" y="95" width="40" height="8" rx="3" fill="#607d8b"/><path d="M110 100 Q85 95 70 110" stroke="#607d8b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M190 100 Q215 95 230 110" stroke="#607d8b" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="130" cy="130" r="6" fill="#e74c3c"/><circle cx="150" cy="132" r="6" fill="#f39c12"/><circle cx="170" cy="130" r="6" fill="#3498db"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Rob&#244; pronto!</text></svg>'
+      }
+    ]
+  },
+  carrinho: {
+    titulo: "Carrinho de Garrafa PET",
+    materiais: "1 garrafa PET média, 4 tampinhas iguais, 2 palitos de churrasco, tesoura, cola quente, tinta colorida.",
+    passos: [
+      {
+        titulo: "Corte a garrafa",
+        desc: "Com a ajuda de um adulto, corte a garrafa PET na metade. Use a parte de baixo como chassi do carrinho.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="60" y="60" width="180" height="70" rx="30" fill="#80deea" stroke="#0097a7" stroke-width="3"/><line x1="150" y1="60" x2="150" y2="130" stroke="#e74c3c" stroke-width="2.5" stroke-dasharray="6,4"/><text x="100" y="50" text-anchor="middle" font-size="10" fill="#0097a7">parte de cima</text><text x="200" y="50" text-anchor="middle" font-size="10" fill="#27ae60" font-weight="bold">use esta parte</text><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Corte no meio com cuidado</text><text x="155" y="100" font-size="16">&#9986;</text></svg>'
+      },
+      {
+        titulo: "Faça os furos dos eixos",
+        desc: "Faça 4 furos nas laterais da garrafa: 2 na frente e 2 atrás, alinhados. Os palitos passarão por eles.",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="60" y="70" width="180" height="60" rx="20" fill="#80deea" stroke="#0097a7" stroke-width="3"/><circle cx="80" cy="100" r="7" fill="white" stroke="#e74c3c" stroke-width="2.5"/><circle cx="220" cy="100" r="7" fill="white" stroke="#e74c3c" stroke-width="2.5"/><circle cx="80" cy="70" r="5" fill="#e74c3c" opacity="0.5"/><circle cx="220" cy="70" r="5" fill="#e74c3c" opacity="0.5"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">4 furos alinhados nas laterais</text></svg>'
+      },
+      {
+        titulo: "Encaixe os palitos e tampinhas",
+        desc: "Passe os palitos pelos furos. Cole uma tampinha em cada ponta com cola quente — essas serão as rodas!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="70" y="75" width="160" height="50" rx="18" fill="#80deea" stroke="#0097a7" stroke-width="3"/><line x1="40" y1="100" x2="260" y2="100" stroke="#795548" stroke-width="4"/><circle cx="40" cy="100" r="18" fill="#e74c3c" stroke="#c0392b" stroke-width="2.5"/><circle cx="40" cy="100" r="9" fill="#c0392b" opacity="0.5"/><circle cx="260" cy="100" r="18" fill="#e74c3c" stroke="#c0392b" stroke-width="2.5"/><circle cx="260" cy="100" r="9" fill="#c0392b" opacity="0.5"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Palito + tampinhas = rodas!</text></svg>'
+      },
+      {
+        titulo: "Pinte e decore!",
+        desc: "Pinte o carrinho com tinta colorida. Adicione detalhes com caneta permanente. Seu carrinho reciclado está pronto para correr!",
+        svg: '<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="70" y="70" width="160" height="55" rx="18" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/><rect x="100" y="55" width="100" height="30" rx="12" fill="#ef9a9a" stroke="#c0392b" stroke-width="2"/><line x1="40" y1="105" x2="260" y2="105" stroke="#795548" stroke-width="4"/><circle cx="40" cy="105" r="18" fill="#1a4028" stroke="#0e1a10" stroke-width="2"/><circle cx="40" cy="105" r="9" fill="#2d6a4f" opacity="0.7"/><circle cx="260" cy="105" r="18" fill="#1a4028" stroke="#0e1a10" stroke-width="2"/><circle cx="260" cy="105" r="9" fill="#2d6a4f" opacity="0.7"/><circle cx="110" cy="83" r="5" fill="white" opacity="0.8"/><circle cx="150" cy="80" r="5" fill="white" opacity="0.8"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Carrinho reciclado pronto!</text><text x="265" y="62" font-size="18">&#127937;</text></svg>'
+      }
+    ]
+  }
+};
+
+/* ======== ABRIR TUTORIAL ======== */
+var acards = document.querySelectorAll(".art-card[data-tutorial]");
+for (var ai=0;ai<acards.length;ai++) {
+  acards[ai].addEventListener("click", function() {
+    var key = this.getAttribute("data-tutorial");
+    var tut = tutoriais[key];
+    if (!tut) return;
+    var stepIndex = 0;
+
+    function renderTutorial() {
+      var s = tut.passos[stepIndex];
+      var total = tut.passos.length;
+      var corpo =
+        '<div class="materiais-box"><strong>&#9874; Materiais:</strong>'+tut.materiais+'</div>' +
+        '<div class="tutorial-wrap">' +
+          '<div class="tutorial-steps">' +
+            '<div class="tutorial-step active">' +
+              s.svg +
+              '<h4>Passo '+(stepIndex+1)+': '+s.titulo+'</h4>' +
+              '<p>'+s.desc+'</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tut-nav">' +
+            '<button class="tut-btn" id="tutAnterior" '+(stepIndex===0?'disabled':'')+'>&#8592; Anterior</button>' +
+            '<span class="tut-counter">'+(stepIndex+1)+' / '+total+'</span>' +
+            '<button class="tut-btn" id="tutProximo" '+(stepIndex===total-1?'disabled':'')+'>Pr&#243;ximo &#8594;</button>' +
+          '</div>' +
+        '</div>';
+      document.getElementById("modalTitulo").textContent = tut.titulo;
+      document.getElementById("modalBody").innerHTML = corpo;
+
+      document.getElementById("tutAnterior").addEventListener("click", function() {
+        if (stepIndex > 0) { stepIndex--; renderTutorial(); }
+      });
+      document.getElementById("tutProximo").addEventListener("click", function() {
+        if (stepIndex < tut.passos.length-1) { stepIndex++; renderTutorial(); }
+      });
+    }
+
+    abrirModal(tut.titulo, "");
+    renderTutorial();
+  });
+}
+
+/* ======== BOTAO MAPS ======== */
+document.getElementById("btnAbrirMapa").addEventListener("click", function() {
+  window.open("https://www.google.com/maps/search/?api=1&query=reciclagem+Jundiai+Varzea+Paulista+Campo+Limpo+Paulista", "_blank", "noopener,noreferrer");
+});
+
+/* ======== NAVBAR SCROLL ======== */
+window.addEventListener("scroll", function() {
+  document.getElementById("navbar").classList.toggle("scrolled", window.scrollY>40);
+});
+
+/* ======== MOBILE MENU ======== */
+document.getElementById("hamburger").addEventListener("click", function() { document.getElementById("mobileMenu").classList.add("open"); });
+document.getElementById("mobileClose").addEventListener("click", function() { document.getElementById("mobileMenu").classList.remove("open"); });
+
+
+
+/* ======== ARTESANATO - YouTube cards ======== */
+var ycards = document.querySelectorAll(".art-card[data-youtube]");
+for (var yi=0;yi<ycards.length;yi++) {
+  ycards[yi].addEventListener("click", function() {
+    var url = this.getAttribute("data-youtube");
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+}
+
+/* ======== GRAFICO MENSAL ======== */
+(function() {
+  var meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  var mesAtual = new Date().getMonth(); // 0-11
+  var anoAtual = new Date().getFullYear();
+  var chave = "ecomapa_visitas_" + anoAtual;
+
+  try {
+    var dados = JSON.parse(localStorage.getItem(chave) || "{}");
+    var mesKey = String(mesAtual);
+    dados[mesKey] = (dados[mesKey] || 0) + 1;
+    localStorage.setItem(chave, JSON.stringify(dados));
+
+    var maxVal = 1;
+    for (var m = 0; m <= 11; m++) { if ((dados[String(m)]||0) > maxVal) maxVal = dados[String(m)]; }
+
+    var container = document.getElementById("graficoBars");
+    if (!container) return;
+    var html = "";
+    for (var i = 0; i <= 11; i++) {
+      var val = dados[String(i)] || 0;
+      var pct = Math.round((val / maxVal) * 100);
+      var altura = Math.max(pct, val > 0 ? 4 : 0);
+      var destaque = (i === mesAtual) ? "background:linear-gradient(180deg,var(--gold),#a87a20);" : "";
+      html +=
+        '<div class="grafico-barra-wrap">' +
+          '<span class="grafico-barra-val">' + (val > 0 ? val : "") + '</span>' +
+          '<div class="grafico-barra" style="height:' + altura + '%;' + destaque + '" title="' + meses[i] + ': ' + val + ' visitas"></div>' +
+          '<span class="grafico-barra-mes">' + meses[i] + '</span>' +
+        '</div>';
+    }
+    container.innerHTML = html;
+  } catch(e) {}
+})();
+
+/* ======== SCROLL REVEAL ======== */
+var revealEls = document.querySelectorAll(".reveal");
+if ("IntersectionObserver" in window) {
+  var obs = new IntersectionObserver(function(entries) {
+    for (var k=0;k<entries.length;k++) { if(entries[k].isIntersecting) entries[k].target.classList.add("visible"); }
+  }, {threshold:0.1});
+  for (var rv=0;rv<revealEls.length;rv++) obs.observe(revealEls[rv]);
+} else {
+  for (var rv2=0;rv2<revealEls.length;rv2++) revealEls[rv2].classList.add("visible");
+}
+
+/* ======== INIT ======== */
+renderPontos("todos");
+</script>
+</body>
+</html>
