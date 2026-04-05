@@ -281,7 +281,40 @@
 
 <nav class="navbar" id="navbar">
   <div class="container nav-inner">
-    <a href="#home" class="logo"><span class="logo-dot"></span>EcoMapa</a>
+    <a href="#home" class="logo"><svg width="28" height="28" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;">
+  <style>
+    @keyframes pinDrop2{0%{transform:translateY(-80px);opacity:0}60%{transform:translateY(8px);opacity:1}80%{transform:translateY(-4px)}100%{transform:translateY(0);opacity:1}}
+    @keyframes shadowScale2{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:.18}}
+    @keyframes sproutGrow2{0%{transform:scaleY(0);opacity:0}100%{transform:scaleY(1);opacity:1}}
+    @keyframes leafLeft2{0%{opacity:0;transform:scale(0) rotate(-30deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+    @keyframes leafRight2{0%{opacity:0;transform:scale(0) rotate(30deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+    @keyframes ripple2a{0%{r:0;opacity:.4}100%{r:72;opacity:0}}
+    .pg2{animation:pinDrop2 .7s cubic-bezier(.22,1,.36,1) .2s both;transform-origin:340px 310px}
+    .sh2{animation:shadowScale2 .4s ease .85s both;transform-origin:340px 326px}
+    .sg2{animation:sproutGrow2 .5s cubic-bezier(.34,1.56,.64,1) .95s both;transform-origin:340px 195px}
+    .ll2{animation:leafLeft2 .45s cubic-bezier(.34,1.56,.64,1) 1.2s both;transform-origin:330px 158px}
+    .lr2{animation:leafRight2 .45s cubic-bezier(.34,1.56,.64,1) 1.35s both;transform-origin:350px 158px}
+    .rp1{animation:ripple2a 1.8s ease-out 1.5s infinite}
+    .rp2{animation:ripple2a 1.8s ease-out 2s infinite}
+  </style>
+  <rect width="680" height="480" fill="none"/>
+  <circle class="rp1" cx="340" cy="310" fill="none" stroke="#6dbd7e" stroke-width="2"/>
+  <circle class="rp2" cx="340" cy="310" fill="none" stroke="#6dbd7e" stroke-width="1.5"/>
+  <ellipse class="sh2" cx="340" cy="326" rx="38" ry="9" fill="#1a2e1e"/>
+  <g class="pg2">
+    <path d="M340 80C295 80 258 117 258 162C258 222 340 310 340 310L340 80Z" fill="#1a4028"/>
+    <path d="M340 80C385 80 422 117 422 162C422 222 340 310 340 310L340 80Z" fill="#52b788"/>
+    <g class="sg2">
+      <line x1="340" y1="190" x2="340" y2="210" stroke="#f0ede6" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+    <g class="ll2">
+      <path d="M340 178C340 178 316 166 318 148C322 148 334 156 336 166C336 156 332 142 338 138C342 148 340 178 340 178Z" fill="#95d5b2"/>
+    </g>
+    <g class="lr2">
+      <path d="M340 178C340 178 364 166 362 148C358 148 346 156 344 166C344 156 348 142 342 138C338 148 340 178 340 178Z" fill="#f0ede6" opacity=".88"/>
+    </g>
+  </g>
+</svg>EcoMapa</a>
     <button class="hamburger" id="hamburger" aria-label="Menu"><i class="fas fa-bars"></i></button>
     <ul class="nav-links">
       <li><button class="nav-btn" onclick="irPara('sobre')">Sobre</button></li>
