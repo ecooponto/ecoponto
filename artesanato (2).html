@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artesanato Sustentável | EcoMapa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --ink:#0e1a10;--forest:#1a4028;--moss:#2d6a4f;--leaf:#52b788;
+      --sage:#95d5b2;--mist:#d8f3dc;--cream:#f4f7f4;--gold:#c9a84c;--white:#ffffff;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',Arial,sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* HEADER */
+    .header{background:linear-gradient(160deg,#0e2218,var(--forest));padding:20px 0 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.2);}
+    .header-inner{max-width:1200px;margin:0 auto;padding:0 24px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .header-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+    .header-logo span{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:900;color:var(--white);}
+    .header-back{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);border-radius:100px;padding:8px 16px;font-size:0.82rem;font-weight:600;text-decoration:none;transition:all 0.22s;}
+    .header-back:hover{background:rgba(255,255,255,0.18);color:var(--white);}
+    .header-title{max-width:1200px;margin:0 auto;padding:0 24px 28px;}
+    .header-title h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.7rem,3vw,2.3rem);font-weight:900;color:var(--white);margin-bottom:6px;}
+    .header-title p{color:rgba(255,255,255,0.6);font-size:0.92rem;}
+
+    /* FILTROS */
+    .filtros-wrap{max-width:1200px;margin:28px auto 0;padding:0 24px;display:flex;gap:8px;flex-wrap:wrap;}
+    .filtro-btn{padding:8px 20px;border-radius:100px;border:1.5px solid rgba(26,64,40,0.15);background:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'DM Sans',Arial,sans-serif;color:var(--forest);transition:all 0.2s;box-shadow:0 2px 8px rgba(26,64,40,0.05);}
+    .filtro-btn.active,.filtro-btn:hover{background:var(--forest);color:var(--white);border-color:var(--forest);}
+
+    /* GRID */
+    .art-grid{max-width:1200px;margin:24px auto 60px;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+
+    /* CARDS */
+    .art-card{background:var(--white);border-radius:24px;overflow:hidden;cursor:pointer;box-shadow:0 4px 20px rgba(26,64,40,0.07);transition:transform 0.3s,box-shadow 0.3s;border:1.5px solid rgba(26,64,40,0.05);}
+    .art-card:hover{transform:translateY(-8px);box-shadow:0 20px 44px rgba(26,64,40,0.14);}
+    .art-thumb{background:linear-gradient(145deg,#0f2a1a,var(--forest));height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+    .art-thumb::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(82,183,136,0.25),transparent 65%);}
+    .art-bg-emoji{position:absolute;top:14px;right:16px;font-size:2.6rem;opacity:0.12;}
+    .art-play-btn{width:60px;height:60px;background:rgba(255,255,255,0.13);border:2px solid rgba(255,255,255,0.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--white);transition:all 0.28s;z-index:1;}
+    .art-card:hover .art-play-btn{background:var(--leaf);border-color:var(--leaf);color:var(--ink);transform:scale(1.13);}
+    .art-thumb.yt-thumb{background:#111;}
+    .art-thumb.yt-thumb::before{display:none;}
+    .art-thumb.yt-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.82;transition:opacity 0.25s;}
+    .art-card:hover .art-thumb.yt-thumb img{opacity:1;}
+    .art-card:hover .art-thumb.yt-thumb .art-play-btn{background:#ff0000;border-color:#ff0000;color:#fff;}
+    .art-body{padding:18px 20px 22px;}
+    .art-tag{display:inline-block;background:var(--mist);color:var(--moss);border-radius:100px;padding:3px 12px;font-size:0.7rem;font-weight:700;margin-bottom:9px;}
+    .art-body h4{font-family:'Playfair Display',Georgia,serif;font-size:1.05rem;color:var(--forest);margin-bottom:5px;}
+    .art-body p{font-size:0.82rem;color:#7a8c7e;}
+
+    /* EMPTY STATE */
+    .art-empty{grid-column:1/-1;text-align:center;padding:60px 24px;color:#7a8c7e;}
+    .art-empty i{font-size:3rem;color:var(--sage);display:block;margin-bottom:14px;}
+
+    /* MODAL TUTORIAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,18,10,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:24px;padding:32px;max-width:520px;width:100%;position:relative;animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
+    @keyframes popIn{from{transform:scale(0.88) translateY(14px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+    .modal-close{position:absolute;top:14px;right:18px;font-size:1.4rem;cursor:pointer;color:#9eaba1;background:none;border:none;}
+    .modal-box h3{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;color:var(--forest);margin-bottom:14px;padding-right:24px;}
+    .materiais-box{background:var(--mist);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:0.84rem;color:var(--forest);}
+    .materiais-box strong{display:block;margin-bottom:4px;}
+    .tutorial-step h4{font-family:'Playfair Display',Georgia,serif;color:var(--forest);font-size:1rem;margin-bottom:6px;text-align:center;}
+    .tutorial-step p{font-size:0.84rem;color:#5a6b5e;text-align:center;margin-bottom:12px;}
+    .tutorial-step svg{display:block;margin:0 auto;max-width:100%;}
+    .tut-nav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+    .tut-btn{background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:8px 20px;font-family:'DM Sans',Arial,sans-serif;font-weight:600;font-size:0.84rem;cursor:pointer;transition:background 0.2s;}
+    .tut-btn:hover{background:var(--moss);}
+    .tut-btn:disabled{background:#ccc;cursor:default;}
+    .tut-counter{font-size:0.8rem;color:#7a8c7e;}
+    .btn-fechar{display:inline-flex;align-items:center;gap:6px;margin-top:20px;background:var(--forest);color:var(--white);border:none;padding:10px 24px;border-radius:100px;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-weight:600;font-size:0.88rem;transition:background 0.2s;}
+    .btn-fechar:hover{background:var(--moss);}
+
+    /* SUBMIT BANNER */
+    .submit-banner{max-width:1200px;margin:0 auto 40px;padding:0 24px;}
+    .submit-box{background:linear-gradient(135deg,var(--forest),var(--moss));border-radius:22px;padding:28px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .submit-box i{font-size:2.5rem;color:var(--sage);flex-shrink:0;}
+    .submit-box div{flex:1;}
+    .submit-box h3{font-family:'Playfair Display',Georgia,serif;color:var(--white);font-size:1.15rem;margin-bottom:4px;}
+    .submit-box p{color:rgba(255,255,255,0.65);font-size:0.88rem;}
+    .submit-box a{display:inline-flex;align-items:center;gap:7px;background:var(--leaf);color:var(--ink);border-radius:100px;padding:10px 22px;font-weight:700;font-size:0.88rem;text-decoration:none;transition:all 0.25s;flex-shrink:0;margin-top:4px;}
+    .submit-box a:hover{background:var(--sage);transform:translateY(-2px);}
+
+    /* FOOTER */
+    .footer{background:#080f09;padding:24px;text-align:center;}
+    .footer p{color:rgba(255,255,255,0.28);font-size:0.82rem;}
+    .footer span{color:var(--leaf);}
+
+    @media(max-width:700px){
+      .art-grid{padding:0 16px;grid-template-columns:1fr 1fr;}
+      .filtros-wrap{padding:0 16px;}
+      .header-inner{padding:0 16px 16px;}
+      .header-title{padding:0 16px 24px;}
+      .submit-banner{padding:0 16px;}
+    }
+    @media(max-width:420px){
+      .art-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="index.html" class="header-logo">
+      <svg width="26" height="26" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
+        <path d="M340 80C295 80 258 117 258 162C258 222 340 310 340 310L340 80Z" fill="#1a4028"/>
+        <path d="M340 80C385 80 422 117 422 162C422 222 340 310 340 310L340 80Z" fill="#52b788"/>
+        <path d="M340 178C340 178 316 166 318 148C322 148 334 156 336 166C336 156 332 142 338 138C342 148 340 178 340 178Z" fill="#95d5b2"/>
+      </svg>
+      <span>EcoMapa</span>
+    </a>
+    <a href="index.html" class="header-back"><i class="fas fa-arrow-left"></i> Voltar ao site</a>
+  </div>
+  <div class="header-title">
+    <h1>&#127912; Artesanato Sustent&#225;vel</h1>
+    <p>Tutoriais passo a passo com materiais recicl&#225;veis. Novos tutoriais sendo adicionados!</p>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="filtros-wrap">
+  <button class="filtro-btn active" data-filtro="todos">Todos</button>
+  <button class="filtro-btn" data-filtro="jogo">Jogos</button>
+  <button class="filtro-btn" data-filtro="brinquedo">Brinquedos</button>
+  <button class="filtro-btn" data-filtro="decoracao">Decora&#231;&#227;o</button>
+  <button class="filtro-btn" data-filtro="util">&#218;teis</button>
+</div>
+
+<!-- GRID -->
+<div class="art-grid" id="artGrid"></div>
+
+<!-- BANNER ENVIAR -->
+<div class="submit-banner">
+  <div class="submit-box">
+    <i class="fas fa-camera"></i>
+    <div>
+      <h3>Tem um artesanato para compartilhar?</h3>
+      <p>Mande foto e descri&#231;&#227;o para o nosso e-mail — pode virar tutorial aqui!</p>
+    </div>
+    <a href="/cdn-cgi/l/email-protection#abcec8c4c4dbc4c5dfc4ebccc6cac2c785c8c4c694d8dec9c1cec8df96ead9dfced8cac5cadfc48bdbcad9ca8bc48beec8c4e6cadbca">
+      <i class="fas fa-envelope"></i> Enviar meu artesanato
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>&copy; 2026 <span>EcoMapa</span> &mdash; Reciclagem que inspira &#9851;</p>
+</div>
+
+<!-- MODAL TUTORIAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <h3 id="modalTitulo"></h3>
+    <div id="modalBody"></div>
+    <button class="btn-fechar" id="modalFechar">Fechar</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var tutoriais = [
+  {
+    id:"corrida", categoria:"jogo", emoji:"🏁", tag:"Jogo",
+    titulo:"Jogo de corrida com tampinhas",
+    desc:"Tampinhas + caixa de ovos + dado",
+    tipo:"interno",
+    materiais:"Tampinhas de garrafa PET coloridas, 1 caixa de ovos, papelão, canetinha ou tinta, cola, tesoura, 1 dado.",
+    passos:[
+      {titulo:"Preparar a base",desc:"Pegue um pedaço de papelão grande. Desenhe uma pista de corrida com canetinha — pode ser reta ou com curvas!",svg:'<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="20" y="40" width="260" height="100" rx="14" fill="#c8e6c9" stroke="#2d6a4f" stroke-width="2"/><path d="M50 90 Q100 50 150 90 Q200 130 250 90" stroke="#2d6a4f" stroke-width="3" fill="none" stroke-dasharray="10,6"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Desenhe a pista no papelão</text></svg>'},
+      {titulo:"Criar o tabuleiro",desc:"Use a caixa de ovos como suporte da pista — ela serve como estrutura para obstáculos ou encaixes das tampinhas. Cole no papelão.",svg:'<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="30" y="50" width="240" height="80" rx="8" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/><ellipse cx="70" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="110" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="150" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="190" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><ellipse cx="230" cy="90" rx="20" ry="14" fill="#fff176" stroke="#f9a825" stroke-width="1.5"/><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Caixa de ovos = suporte da pista</text></svg>'},
+      {titulo:"Fazer os carros",desc:"Cada jogador escolhe uma cor de tampinha. Pinte ou decore com canetinha para diferenciar.",svg:'<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><circle cx="75" cy="90" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/><circle cx="150" cy="90" r="30" fill="#3498db" stroke="#2980b9" stroke-width="3"/><circle cx="225" cy="90" r="30" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/><text x="75" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">1</text><text x="150" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">2</text><text x="225" y="95" text-anchor="middle" font-size="13" fill="white" font-weight="bold">3</text><text x="150" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Tampinhas coloridas = carros</text></svg>'},
+      {titulo:"Jogar!",desc:"Posicione as tampinhas na largada. Em cada turno lance o dado e avance o número de casas. Quem chegar primeiro vence!",svg:'<svg viewBox="0 0 300 180" width="300" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="180" fill="#f8f6f0" rx="12"/><rect x="15" y="50" width="180" height="80" rx="8" fill="#c8e6c9" stroke="#2d6a4f" stroke-width="2"/><circle cx="55" cy="90" r="16" fill="#e74c3c"/><circle cx="105" cy="85" r="16" fill="#3498db"/><circle cx="155" cy="95" r="16" fill="#2ecc71"/><rect x="220" y="55" width="65" height="65" rx="12" fill="white" stroke="#2d6a4f" stroke-width="2.5"/><circle cx="236" cy="71" r="5" fill="#1a4028"/><circle cx="252" cy="71" r="5" fill="#1a4028"/><circle cx="268" cy="71" r="5" fill="#1a4028"/><circle cx="252" cy="88" r="5" fill="#1a4028"/><circle cx="236" cy="105" r="5" fill="#1a4028"/><circle cx="252" cy="105" r="5" fill="#1a4028"/><circle cx="268" cy="105" r="5" fill="#1a4028"/><text x="110" y="168" text-anchor="middle" font-size="11" fill="#7a8c7e">Lance o dado e avance!</text></svg>'}
+    ]
+  },
+  {
+    id:"robo", categoria:"brinquedo", emoji:"🤖", tag:"Brinquedo",
+    titulo:"Robô com garrafa PET",
+    desc:"Ver tutorial no YouTube",
+    tipo:"youtube",
+    url:"https://youtube.com/shorts/RvwX9z6k5gM"
+  },
+  {
+    id:"carrinho", categoria:"brinquedo", emoji:"🚗", tag:"Brinquedo",
+    titulo:"Carrinho de garrafa PET",
+    desc:"Ver tutorial no YouTube",
+    tipo:"youtube",
+    url:"https://youtube.com/shorts/E4xW1pe3Ayg"
+  }
+];
+
+var filtroAtual = "todos";
+
+function renderGrid(filtro) {
+  var lista = filtro === "todos" ? tutoriais : tutoriais.filter(function(t){ return t.categoria === filtro; });
+  var grid = document.getElementById("artGrid");
+  if (lista.length === 0) {
+    grid.innerHTML = '<div class="art-empty"><i class="fas fa-paint-brush"></i><p>Nenhum tutorial nesta categoria ainda. Em breve!</p></div>';
+    return;
+  }
+  grid.innerHTML = "";
+  lista.forEach(function(t){
+    var div = document.createElement("div");
+    div.className = "art-card";
+    div.setAttribute("data-id", t.id);
+    var ytId = t.url ? t.url.split('/').pop().split('?')[0] : '';
+    var thumbHtml = t.tipo === 'youtube'
+      ? '<div class="art-thumb yt-thumb"><img src="https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg" alt="'+t.titulo+'" loading="lazy"><div class="art-play-btn"><i class="fab fa-youtube"></i></div></div>'
+      : '<div class="art-thumb"><div class="art-play-btn"><i class="fas fa-paint-brush"></i></div><span class="art-bg-emoji">'+t.emoji+'</span></div>';
+    div.innerHTML =
+      thumbHtml+
+      '<div class="art-body">'+
+        '<span class="art-tag">'+t.tag+'</span>'+
+        '<h4>'+t.titulo+'</h4>'+
+        '<p>'+t.desc+'</p>'+
+      '</div>';
+    div.addEventListener("click", function(){
+      var id = this.getAttribute("data-id");
+      var tut = tutoriais.find(function(x){ return x.id === id; });
+      if (!tut) return;
+      if (tut.tipo === "youtube") {
+        window.open(tut.url, "_blank", "noopener,noreferrer");
+      } else {
+        abrirTutorial(tut);
+      }
+    });
+    grid.appendChild(div);
+  });
+}
+
+function abrirTutorial(tut) {
+  var stepIndex = 0;
+  function render() {
+    var s = tut.passos[stepIndex];
+    var total = tut.passos.length;
+    document.getElementById("modalTitulo").textContent = tut.titulo;
+    document.getElementById("modalBody").innerHTML =
+      '<div class="materiais-box"><strong>🔧 Materiais:</strong>'+tut.materiais+'</div>'+
+      '<div>'+
+        s.svg+
+        '<h4>Passo '+(stepIndex+1)+': '+s.titulo+'</h4>'+
+        '<p>'+s.desc+'</p>'+
+        '<div class="tut-nav">'+
+          '<button class="tut-btn" id="tutAnterior"'+(stepIndex===0?' disabled':'')+'>← Anterior</button>'+
+          '<span class="tut-counter">'+(stepIndex+1)+' / '+total+'</span>'+
+          '<button class="tut-btn" id="tutProximo"'+(stepIndex===total-1?' disabled':'')+'>Próximo →</button>'+
+        '</div>'+
+      '</div>';
+  }
+  render();
+  document.getElementById("modal").classList.add("open");
+  document.getElementById("modalBody").addEventListener("click", function(e){
+    if (e.target.id === "tutAnterior" && stepIndex > 0){ stepIndex--; render(); }
+    if (e.target.id === "tutProximo" && stepIndex < tut.passos.length-1){ stepIndex++; render(); }
+  });
+}
+
+document.getElementById("modalClose").addEventListener("click", function(){ document.getElementById("modal").classList.remove("open"); });
+document.getElementById("modalFechar").addEventListener("click", function(){ document.getElementById("modal").classList.remove("open"); });
+document.getElementById("modal").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("open"); });
+
+document.querySelectorAll(".filtro-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    document.querySelectorAll(".filtro-btn").forEach(function(b){ b.classList.remove("act
