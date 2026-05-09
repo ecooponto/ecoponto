@@ -475,7 +475,7 @@ function renderPontos(filtro, termoBusca) {
   }
   document.getElementById("pontosLista").innerHTML=html;
   document.querySelectorAll(".btn-ver-mapa,.btn-rota,.btn-wpp").forEach(function(b){
-    b.addEventListener("click",function(){ window.location.href = this.getAttribute("data-url");
+  b.addEventListener("click",function(){ window.location.href = this.getAttribute("data-url"); });
   });
 }
 
