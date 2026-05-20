@@ -1,0 +1,720 @@
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+#gw{width:100%;font-family:'Segoe UI',Arial,sans-serif;background:#1a3a1a;}
+#hud{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:linear-gradient(90deg,#1a3a1a,#2d5a2d);border-bottom:2px solid #3a7a3a;}
+#hud span{color:#fff;font-size:13px;font-weight:600;}
+#carry-hud{background:rgba(255,255,255,0.15);padding:4px 14px;border-radius:20px;min-width:110px;text-align:center;font-size:12px;border:1px solid rgba(255,255,255,0.2);}
+canvas{display:block;}
+#hint{text-align:center;padding:5px 0 3px;font-size:11px;color:#8aaa8a;background:#1a3a1a;}
+</style>
+<div id="gw">
+  <div id="hud">
+    <span>⭐ <strong id="pts">0</strong> pts</span>
+    <span id="carry-hud">nada</span>
+    <span id="vidas">❤️❤️❤️</span>
+  </div>
+  <canvas id="c"></canvas>
+  <div id="hint">← → mover &nbsp;|&nbsp; ↑ / Espaço pular &nbsp;|&nbsp; E coletar / descartar &nbsp;|&nbsp; <strong style="color:#52ff7a">Capitão. Ordem dos Resíduos.</strong></div>
+</div>
+<script>
+var CV=document.getElementById('c'),ctx=CV.getContext('2d');
+var W=680,H=440;CV.width=W;CV.height=H;
+
+// ── CORES CONAMA ────────────────────────────────────────
+var BINS=[
+  {tipo:'papel',    label:'Papel',    col:'#2176ff', border:'#0d4fc2', icon:'📄', x:30,  w:62,h:76},
+  {tipo:'plastico', label:'Plástico', col:'#e63946', border:'#a01c28', icon:'🧴', x:110, w:62,h:76},
+  {tipo:'vidro',    label:'Vidro',    col:'#2dc653', border:'#1a8a38', icon:'🍾', x:190, w:62,h:76},
+  {tipo:'metal',    label:'Metal',    col:'#ffd60a', border:'#9a8200', icon:'🥫', x:270, w:62,h:76},
+  {tipo:'organico', label:'Orgânico', col:'#8B4513', border:'#5a2a0a', icon:'🍌', x:350, w:62,h:76},
+];
+
+var ITEM_TYPES=[
+  {tipo:'papel',    e:'📰',label:'Papel'},
+  {tipo:'papel',    e:'📦',label:'Papel'},
+  {tipo:'plastico', e:'🧴',label:'Plástico'},
+  {tipo:'plastico', e:'🪣',label:'Plástico'},
+  {tipo:'vidro',    e:'🍾',label:'Vidro'},
+  {tipo:'vidro',   e:'🫙',label:'Vidro'},
+  {tipo:'metal',    e:'🥫',label:'Metal'},
+  {tipo:'metal',    e:'⚙️', label:'Metal'},
+  {tipo:'organico', e:'🍌',label:'Orgânico'},
+  {tipo:'organico', e:'🍎',label:'Orgânico'},
+];
+
+var GROUND_Y=378;
+var PLATS=[
+  {x:0,   y:GROUND_Y,w:W,  h:H-GROUND_Y},
+  {x:85,  y:298,w:115,h:14},
+  {x:280, y:268,w:110,h:14},
+  {x:460, y:292,w:125,h:14},
+  {x:175, y:216,w:92, h:14},
+  {x:375, y:198,w:92, h:14},
+  {x:555, y:220,w:108,h:14},
+];
+
+var ITEM_SPOTS=[
+  {x:100,y:270},{x:138,y:270},
+  {x:295,y:240},{x:330,y:240},
+  {x:474,y:264},{x:512,y:264},
+  {x:188,y:188},{x:220,y:188},
+  {x:390,y:170},{x:424,y:170},
+  {x:470,y:348},{x:580,y:348},
+];
+
+var TREES=[
+  {x:52, cy:272,r:30,trunk:9},
+  {x:248,cy:264,r:27,trunk:8},
+  {x:500,cy:255,r:28,trunk:9},
+  {x:638,cy:260,r:25,trunk:8},
+];
+var CLOUDS=[[85,40,1.1],[240,27,0.9],[440,44,1.0],[598,32,0.85]];
+
+var t0=Date.now();
+var state='menu',pts=0,vidas=3;
+var player,items,particles;
+var keys={},tL=false,tR=false,tJ=false,tE=false;
+var wrongAnim=0,binFlash={};
+
+function init(){
+  player={
+    x:80,y:320,w:24,h:40,
+    vx:0,vy:0,onGround:false,
+    dir:1,
+    walkPhase:0,
+    collectAnim:0,cooldown:0,carrying:null,
+    footL:0,footR:0,armL:0,armR:0,
+    bobY:0,
+    jumpState:0,
+  };
+  items=ITEM_SPOTS.map(function(s,i){
+    var t=ITEM_TYPES[i%ITEM_TYPES.length];
+    return{x:s.x,y:s.y,e:t.e,tipo:t.tipo,label:t.label,
+           bob:Math.random()*Math.PI*2,collected:false};
+  });
+  particles=[];pts=0;vidas=3;wrongAnim=0;binFlash={};
+  state='playing';updateHud();
+}
+
+function updateHud(){
+  document.getElementById('pts').textContent=pts;
+  var v='';for(var i=0;i<vidas;i++)v+='❤️';for(var i=vidas;i<3;i++)v+='🖤';
+  document.getElementById('vidas').textContent=v;
+  var ch=document.getElementById('carry-hud');
+  ch.textContent=player&&player.carrying?'🤲 '+player.carrying.e+' '+player.carrying.label:'nada';
+}
+
+// ── FÍSICA ──────────────────────────────────────────────
+var GRAV=0.52,JUMP=-13.2,WALK=3.8,FRIC=0.75;
+
+function onPlat(p){
+  return player.x+player.w>p.x&&player.x<p.x+p.w&&
+         player.y+player.h>p.y&&player.y+player.h<p.y+p.h+8&&player.vy>=0;
+}
+
+function update(){
+  if(state!=='playing')return;
+  if(wrongAnim>0)wrongAnim--;
+  Object.keys(binFlash).forEach(function(k){if(binFlash[k]>0)binFlash[k]--;});
+
+  var L=keys['ArrowLeft']||keys['a']||tL;
+  var R=keys['ArrowRight']||keys['d']||tR;
+  var J=keys['ArrowUp']||keys['w']||keys[' ']||tJ;
+  var E=keys['e']||keys['E']||tE;
+
+  if(L){player.vx-=1.4;player.dir=-1;}
+  if(R){player.vx+=1.4;player.dir=1;}
+  player.vx=Math.max(-WALK,Math.min(WALK,player.vx));
+  if(!L&&!R)player.vx*=FRIC;
+  if(Math.abs(player.vx)<0.05)player.vx=0;
+
+  if(J&&player.onGround){player.vy=JUMP;player.onGround=false;}
+  player.vy+=GRAV;
+  player.x+=player.vx;player.y+=player.vy;
+  player.x=Math.max(0,Math.min(W-player.w,player.x));
+
+  player.onGround=false;
+  PLATS.forEach(function(p){if(onPlat(p)){player.y=p.y-player.h;player.vy=0;player.onGround=true;}});
+  if(player.y>H+60){loseLife();return;}
+
+  // ── ANIMAÇÃO SENOIDAL FLUIDA ────────────────────────────
+  var spd=Math.abs(player.vx);
+  if(player.onGround&&spd>0.2) player.walkPhase+=spd*0.17;
+  player.jumpState=player.onGround?0:(player.vy<0?1:2);
+
+  var targetFL,targetFR,targetAL,targetAR,targetBob;
+  if(!player.onGround){
+    targetFL=-20;targetFR=20;targetAL=-22;targetAR=22;targetBob=0;
+  } else if(spd>0.2){
+    var s=Math.sin(player.walkPhase);
+    var amp=13+spd*2.0;
+    targetFL= s*amp;
+    targetFR=-s*amp;
+    targetAL=-Math.cos(player.walkPhase)*amp*0.55;
+    targetAR= Math.cos(player.walkPhase)*amp*0.55;
+    targetBob=Math.abs(Math.sin(player.walkPhase*2))*-2.2;
+  } else {
+    targetFL=0;targetFR=0;targetAL=0;targetAR=0;targetBob=0;
+  }
+  var lerp=0.17;
+  player.footL+=(targetFL-player.footL)*lerp;
+  player.footR+=(targetFR-player.footR)*lerp;
+  player.armL +=(targetAL-player.armL )*lerp;
+  player.armR +=(targetAR-player.armR )*lerp;
+  player.bobY +=(targetBob-player.bobY)*0.22;
+
+  if(player.collectAnim>0)player.collectAnim--;
+  if(player.cooldown>0)player.cooldown--;
+  items.forEach(function(it){if(!it.collected)it.bob+=0.055;});
+
+  // ── INTERAÇÃO ───────────────────────────────────────────
+  if(E&&player.cooldown===0){
+    player.cooldown=18;
+    if(!player.carrying){
+      var best=null,bd=999;
+      items.forEach(function(it){
+        if(it.collected)return;
+        var dx=(player.x+12)-(it.x+14),dy=(player.y+20)-(it.y+14);
+        var d=Math.sqrt(dx*dx+dy*dy);
+        if(d<56&&d<bd){bd=d;best=it;}
+      });
+      if(best){best.collected=true;player.carrying=best;player.collectAnim=24;updateHud();}
+    } else {
+      var dropped=false;
+      BINS.forEach(function(b){
+        if(dropped)return;
+        var cx=player.x+12;
+        var binY=GROUND_Y-b.h-2;
+        // jogador no chão principal e perto da lixeira no eixo x
+        if(cx>b.x-16&&cx<b.x+b.w+16&&player.onGround&&player.y+player.h>=GROUND_Y-4){
+          dropped=true;
+          if(player.carrying.tipo===b.tipo){
+            pts+=20;player.collectAnim=40;
+            spawnParts(b.x+b.w/2,binY+b.h/2,b.col,16);
+            binFlash[b.tipo]=30;
+            player.carrying=null;updateHud();
+            if(items.every(function(i){return i.collected;})&&!player.carrying)
+              setTimeout(function(){state='win';},700);
+          } else {
+            wrongAnim=60;spawnParts(player.x+12,player.y+10,'#e63946',10);
+            vidas--;updateHud();
+            player.carrying=null;updateHud();
+            if(vidas<=0){state='gameover';}
+          }
+        }
+      });
+    }
+  }
+
+  particles=particles.filter(function(p){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.22;p.life--;return p.life>0;
+  });
+}
+
+function loseLife(){
+  vidas--;updateHud();
+  if(player.carrying){player.carrying=null;updateHud();}
+  player.x=80;player.y=320;player.vx=0;player.vy=0;
+  if(vidas<=0)state='gameover';
+}
+
+function spawnParts(x,y,col,n){
+  for(var i=0;i<n;i++){
+    var a=(Math.PI*2/n)*i+Math.random()*0.5;
+    var s=1.8+Math.random()*3.5;
+    particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.2,
+                    life:28+Math.random()*14,col:col,r:2.5+Math.random()*3});
+  }
+}
+
+// ── DESENHO FUNDO ───────────────────────────────────────
+function drawBg(){
+  var t=(Date.now()-t0)*0.001;
+  var g=ctx.createLinearGradient(0,0,0,GROUND_Y);
+  g.addColorStop(0,'#5ba3d4');g.addColorStop(1,'#a8d8b8');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='rgba(255,255,255,0.82)';
+  CLOUDS.forEach(function(c,i){
+    var ox=((t*10*(i%2===0?1:-1))%W+W)%W;
+    var cx=(c[0]+ox)%W;var s=c[2];
+    drawCloud(cx,c[1],s);
+    if(cx+80*s>W)drawCloud(cx-W,c[1],s);
+  });
+
+  // chão
+  ctx.fillStyle='#5a8c3a';ctx.fillRect(0,GROUND_Y,W,10);
+  ctx.fillStyle='#8B5E3C';ctx.fillRect(0,GROUND_Y+10,W,H-GROUND_Y-10);
+  ctx.fillStyle='#3d6b27';
+  for(var xi=4;xi<W;xi+=16){
+    ctx.beginPath();ctx.arc(xi+6,GROUND_Y,4,Math.PI,0);ctx.fill();
+  }
+}
+
+function drawCloud(cx,cy,s){
+  ctx.beginPath();ctx.ellipse(cx,cy,40*s,18*s,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+22*s,cy+3*s,26*s,14*s,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx-18*s,cy+4*s,22*s,12*s,0,0,Math.PI*2);ctx.fill();
+}
+
+function drawTrees(){
+  TREES.forEach(function(t){
+    ctx.fillStyle='#6b4423';ctx.fillRect(t.x-t.trunk/2,t.cy,t.trunk,52);
+    ctx.fillStyle='#2a6042';ctx.beginPath();ctx.arc(t.x,t.cy,t.r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#348a56';ctx.beginPath();ctx.arc(t.x+t.r*0.42,t.cy-t.r*0.3,t.r*0.62,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#52b788';ctx.beginPath();ctx.arc(t.x-t.r*0.28,t.cy-t.r*0.18,t.r*0.44,0,Math.PI*2);ctx.fill();
+  });
+}
+
+function drawPlats(){
+  PLATS.forEach(function(p,i){
+    if(i===0)return;
+    ctx.fillStyle='#7a9e4a';ctx.fillRect(p.x,p.y,p.w,p.h);
+    ctx.fillStyle='#5a7a35';ctx.fillRect(p.x,p.y+5,p.w,p.h-5);
+    ctx.fillStyle='#8fba56';
+    for(var xi=p.x+4;xi<p.x+p.w;xi+=12){
+      ctx.beginPath();ctx.arc(xi,p.y,3,Math.PI,0);ctx.fill();
+    }
+  });
+}
+
+// ── LIXEIRAS ────────────────────────────────────────────
+function drawBins(){
+  // zona de descarte visual
+  ctx.fillStyle='rgba(200,230,200,0.13)';
+  ctx.fillRect(18,GROUND_Y-90,420,90);
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+  ctx.setLineDash([5,4]);
+  ctx.strokeRect(19,GROUND_Y-89,418,88);
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,0.28)';
+  ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+  ctx.fillText('▼ DESCARTE AQUI ▼',228,GROUND_Y-93);
+
+  BINS.forEach(function(b){
+    var binY=GROUND_Y-b.h-2;
+    var flash=binFlash[b.tipo]>0;
+    var col=flash?'#ffffff':b.col;
+
+    // sombra elíptica
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.beginPath();ctx.ellipse(b.x+b.w/2,GROUND_Y+3,b.w/2-3,5,0,0,Math.PI*2);ctx.fill();
+
+    // CORPO trapezoidal
+    ctx.fillStyle=col;
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+b.w-5,binY+14);
+    ctx.lineTo(b.x+b.w+2,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.fill();
+
+    // borda
+    ctx.strokeStyle=b.border;ctx.lineWidth=2.2;
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+b.w-5,binY+14);
+    ctx.lineTo(b.x+b.w+2,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.stroke();
+
+    // brilho esquerdo
+    ctx.fillStyle='rgba(255,255,255,0.16)';
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+13,binY+14);
+    ctx.lineTo(b.x+15,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.fill();
+
+    // linha horizontal meio
+    ctx.strokeStyle='rgba(0,0,0,0.13)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(b.x+1,binY+b.h*0.55);ctx.lineTo(b.x+b.w-1,binY+b.h*0.55);ctx.stroke();
+
+    // TAMPA
+    ctx.fillStyle=b.border;ctx.fillRect(b.x-4,binY+5,b.w+8,11);
+    ctx.fillStyle=flash?'#ffffffcc':col;ctx.fillRect(b.x-1,binY+7,b.w+2,7);
+
+    // alça
+    ctx.strokeStyle=b.border;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(b.x+b.w/2,binY+3,7,Math.PI,0);ctx.stroke();
+
+    // símbolo ♻
+    ctx.fillStyle='rgba(255,255,255,0.88)';
+    ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('♻',b.x+b.w/2,binY+40);
+
+    // RODINHAS (detalhe do v3)
+    ctx.fillStyle='#222';
+    ctx.beginPath();ctx.arc(b.x+10,binY+b.h+3,4.5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(b.x+b.w-10,binY+b.h+3,4.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#666';
+    ctx.beginPath();ctx.arc(b.x+10,binY+b.h+3,2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(b.x+b.w-10,binY+b.h+3,2,0,Math.PI*2);ctx.fill();
+
+    // LABEL colorido
+    var lx=b.x+b.w/2,ly=binY-6;
+    ctx.fillStyle=flash?'#ffffcc':b.col;
+    ctx.fillRect(b.x-3,ly-18,b.w+6,22);
+    ctx.strokeStyle=b.border;ctx.lineWidth=1.5;
+    ctx.strokeRect(b.x-3,ly-18,b.w+6,22);
+    ctx.fillStyle='#fff';
+    ctx.font='bold 8.5px sans-serif';ctx.textAlign='center';
+    ctx.fillText(b.label.toUpperCase(),lx,ly-4);
+    ctx.font='10px serif';ctx.fillText(b.icon,lx,ly+8);
+
+    // flash glow
+    if(flash){
+      ctx.globalAlpha=0.32;
+      ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.arc(b.x+b.w/2,binY+b.h/2,33,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  });
+}
+
+function drawItems(){
+  items.forEach(function(it){
+    if(it.collected)return;
+    var by=Math.sin(it.bob)*4;
+    ctx.globalAlpha=0.18;ctx.fillStyle='#000';
+    ctx.beginPath();ctx.ellipse(it.x+14,it.y+27+by,9,3.5,0,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.globalAlpha=0.16+Math.sin(it.bob)*0.07;
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(it.x+14,it.y+10+by,13,0,Math.PI*2);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.font='22px serif';ctx.textAlign='center';
+    ctx.fillText(it.e,it.x+14,it.y+18+by);
+  });
+}
+
+function drawParticles(){
+  particles.forEach(function(p){
+    ctx.globalAlpha=p.life/42;
+    ctx.fillStyle=p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+}
+
+// ── O CAPITÃO — C.O.R. ──────────────────────────────────
+// Uniforme verde militar, boné com emblema ♻, luvas verdes,
+// cinto tático marrom, mochila de agente, faixa verde/amarela
+function drawPlayer(){
+  var p=player;
+  var flip=p.dir===-1;
+  var px=Math.round(p.x);
+  var py=Math.round(p.y+p.bobY);
+  var glow=p.collectAnim>0;
+  var cx=px+12;
+
+  ctx.save();
+  if(flip){ctx.translate(px+p.w,0);ctx.scale(-1,1);cx=p.w-12;}
+
+  // brilho ao coletar
+  if(glow){
+    ctx.globalAlpha=0.3+Math.sin(Date.now()/65)*0.12;
+    ctx.fillStyle='#52ff7a';
+    ctx.beginPath();ctx.arc(cx,py+18,24,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // sombra chão
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.ellipse(cx,py+p.h+3,10,4,0,0,Math.PI*2);ctx.fill();
+
+  // ── PERNAS — calça verde escuro ──
+  drawLimb(ctx,cx-6,py+25,4,13,p.footL,'#2d5a1b','#1a3a0e');
+  drawLimb(ctx,cx+2, py+25,4,13,p.footR,'#336620','#1e4010');
+
+  // BOTAS pretas táticas
+  ctx.fillStyle='#1a1a1a';
+  ctx.save();
+  var sxL=cx-6+2+Math.sin(p.footL*0.017)*3;
+  ctx.translate(sxL,py+38);ctx.rotate(p.footL*0.017);
+  ctx.beginPath();ctx.ellipse(0,3,8,4.5,0,0,Math.PI*2);ctx.fill();
+  // detalhe bota
+  ctx.fillStyle='#333';ctx.fillRect(-5,0,9,3);
+  ctx.restore();
+  ctx.save();
+  var sxR=cx+2+2+Math.sin(p.footR*0.017)*3;
+  ctx.translate(sxR,py+38);ctx.rotate(p.footR*0.017);
+  ctx.beginPath();ctx.ellipse(0,3,8,4.5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#333';ctx.fillRect(-5,0,9,3);
+  ctx.restore();
+
+  // ── MOCHILA de agente (costas) ──
+  ctx.fillStyle='#5a3e1e';
+  ctx.beginPath();ctx.rect(cx+6,py+11,9,16);ctx.fill();
+  ctx.fillStyle='#7a5a30';ctx.fillRect(cx+7,py+12,7,5);
+  // tubo da mochila
+  ctx.strokeStyle='#8ab4d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+10,py+13);
+  ctx.bezierCurveTo(cx+18,py+10,cx+18,py+20,cx+14,py+22);
+  ctx.stroke();
+
+  // ── CORPO — uniforme verde militar ──
+  // tronco principal
+  ctx.fillStyle='#3d6b22';
+  ctx.beginPath();
+  ctx.moveTo(cx-10,py+12);ctx.lineTo(cx+8,py+12);
+  ctx.lineTo(cx+7,py+26);ctx.lineTo(cx-9,py+26);
+  ctx.closePath();ctx.fill();
+  // textura/dobras do uniforme
+  ctx.fillStyle='rgba(0,0,0,0.12)';
+  ctx.fillRect(cx-10,py+12,3,14);
+  ctx.fillStyle='rgba(255,255,255,0.07)';
+  ctx.fillRect(cx-4,py+13,3,12);
+  // INSÍGNIA no peito (emblema C.O.R.)
+  ctx.fillStyle='#1a8a38';
+  ctx.beginPath();ctx.arc(cx-3,py+17,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#52ff7a';
+  ctx.font='bold 5px sans-serif';ctx.textAlign='center';
+  ctx.fillText('♻',cx-3,py+19);
+  // FAIXA verde/amarela no braço esquerdo
+  ctx.fillStyle='#ffd60a';ctx.fillRect(cx-13,py+19,3,3);
+  ctx.fillStyle='#2dc653';ctx.fillRect(cx-13,py+22,3,3);
+  // CINTO TÁTICO
+  ctx.fillStyle='#6b4a1e';
+  ctx.fillRect(cx-10,py+24,18,4);
+  // fivela dourada
+  ctx.fillStyle='#d4a017';
+  ctx.fillRect(cx-2,py+24,4,4);
+  ctx.fillStyle='#ffd60a';ctx.fillRect(cx-1,py+25,2,2);
+  // bolsinho do cinto
+  ctx.fillStyle='#5a3e1e';
+  ctx.fillRect(cx+4,py+24,4,5);
+
+  // ── BRAÇOS — luvas verdes ──
+  drawLimb(ctx,cx-11,py+13,3,11,p.armL,'#3d6b22','#2a4e18'); // braço esq
+  drawLimb(ctx,cx+8,  py+13,3,11,p.armR,'#3d6b22','#2a4e18'); // braço dir
+  // LUVAS
+  var gAng=p.armL*0.017;
+  ctx.save();
+  ctx.translate(cx-11+1+Math.sin(gAng)*2,py+24+Math.cos(gAng)*3);
+  ctx.rotate(gAng);
+  ctx.fillStyle='#1e6e2e';
+  ctx.beginPath();ctx.ellipse(0,0,4,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  var gAng2=p.armR*0.017;
+  ctx.save();
+  ctx.translate(cx+8+1+Math.sin(gAng2)*2,py+24+Math.cos(gAng2)*3);
+  ctx.rotate(gAng2);
+  ctx.fillStyle='#1e6e2e';
+  ctx.beginPath();ctx.ellipse(0,0,4,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // item na mão
+  if(p.carrying){
+    ctx.font='15px serif';ctx.textAlign='center';
+    ctx.fillText(p.carrying.e,cx+(flip?-19:19),py+14);
+  }
+
+  // ── CABEÇA — pele morena clara com sardas ──
+  // pescoço
+  ctx.fillStyle='#c87941';
+  ctx.fillRect(cx-4,py+5,8,7);
+  // cabeça
+  ctx.fillStyle='#d4895a';
+  ctx.beginPath();ctx.ellipse(cx,py+1,10,11,0,0,Math.PI*2);ctx.fill();
+  // orelha
+  ctx.fillStyle='#c87941';
+  ctx.beginPath();ctx.arc(cx-10,py+2,3.5,0,Math.PI*2);ctx.fill();
+  // cabelo escuro
+  ctx.fillStyle='#1a0a00';
+  ctx.beginPath();
+  ctx.ellipse(cx,py-8,10,5,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillRect(cx-10,py-8,4,6);
+  // sobrancelha esquerda
+  ctx.fillStyle='#1a0a00';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-8,py-4);ctx.lineTo(cx-1,py-5);ctx.stroke();
+  // sobrancelha direita
+  ctx.beginPath();ctx.moveTo(cx+1,py-5);ctx.lineTo(cx+8,py-4);ctx.stroke();
+  // olhos castanhos (como na arte)
+  ctx.fillStyle='#5a2a00';
+  ctx.beginPath();ctx.arc(cx-3,py+1,3,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+4,py+1,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1a0000';
+  ctx.beginPath();ctx.arc(cx-3,py+1,1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+4,py+1,1.8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(cx-2,py,0.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+5,py,0.8,0,Math.PI*2);ctx.fill();
+  // sorriso
+  ctx.strokeStyle='#8a4020';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,py+5,4,0.1,Math.PI-0.1);ctx.stroke();
+  // sardas
+  ctx.fillStyle='rgba(120,60,20,0.5)';
+  ctx.beginPath();ctx.arc(cx-5,py+4,1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+5,py+4,1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx-3,py+5,0.7,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+3,py+5,0.7,0,Math.PI*2);ctx.fill();
+
+  // ── BONÉ VERDE MILITAR ──
+  // aba
+  ctx.fillStyle='#2d5a1b';
+  ctx.beginPath();
+  ctx.moveTo(cx-11,py-6);ctx.lineTo(cx+14,py-6);
+  ctx.quadraticCurveTo(cx+16,py-5,cx+14,py-3);
+  ctx.lineTo(cx-11,py-3);ctx.closePath();ctx.fill();
+  // topo arredondado
+  ctx.fillStyle='#3a7022';
+  ctx.beginPath();ctx.ellipse(cx,py-12,11,9,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillRect(cx-11,py-12,22,7);
+  // linha da aba
+  ctx.fillStyle='#1a3e0e';ctx.fillRect(cx-11,py-6,25,2);
+  // EMBLEMA no boné — círculo verde com ♻
+  ctx.fillStyle='#1a5e28';
+  ctx.beginPath();ctx.arc(cx+1,py-11,5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#ffd60a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx+1,py-11,5,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#ffd60a';
+  ctx.font='bold 6px sans-serif';ctx.textAlign='center';
+  ctx.fillText('♻',cx+1,py-9);
+
+  ctx.restore();
+}
+
+function drawLimb(ctx,x,y,w,h,angleDeg,col1,col2){
+  ctx.save();
+  ctx.translate(x+w/2,y);
+  ctx.rotate(angleDeg*Math.PI/180);
+  ctx.fillStyle=col1;
+  ctx.beginPath();
+  ctx.moveTo(-w/2,0);ctx.lineTo(w/2,0);
+  ctx.lineTo(w/2+1,h);ctx.lineTo(-w/2-1,h);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle=col2;ctx.fillRect(w/2-1,0,2,h);
+  ctx.restore();
+}
+
+// ── HUD IN-GAME ─────────────────────────────────────────
+function drawHUD2(){
+  var left=items.filter(function(i){return!i.collected;}).length;
+  ctx.fillStyle='rgba(0,0,0,0.38)';
+  rrect(ctx,8,8,178,22,5);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('♻ Recicláveis restantes: '+left,15,23);
+
+  // seta + linha tracejada para lixeira correta
+  if(player&&player.carrying){
+    BINS.forEach(function(b){
+      if(b.tipo!==player.carrying.tipo)return;
+      var bx=b.x+b.w/2,by=GROUND_Y-b.h-2;
+      ctx.strokeStyle=b.col;ctx.lineWidth=2;ctx.globalAlpha=0.6;
+      ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(player.x+12,player.y);ctx.lineTo(bx,by);ctx.stroke();
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      var pulse=0.72+Math.sin(Date.now()/190)*0.28;
+      ctx.globalAlpha=pulse;
+      ctx.fillStyle=b.col;
+      ctx.font='bold 17px sans-serif';ctx.textAlign='center';
+      ctx.fillText('▼',bx,by-10);
+      ctx.globalAlpha=1;
+    });
+  }
+}
+
+function drawWrong(){
+  if(wrongAnim>0){
+    ctx.fillStyle='rgba(230,57,70,'+(wrongAnim/60*0.36)+')';
+    ctx.fillRect(0,0,W,H);
+    if(wrongAnim>40){
+      ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText('❌ Lixeira errada! -1 vida',W/2,H/2);
+    }
+  }
+}
+
+function drawTouchUI(){
+  var btns=[
+    {l:'←',x:8,  y:H-54,w:48,h:44},
+    {l:'→',x:62, y:H-54,w:48,h:44},
+    {l:'↑',x:W-58,y:H-64,w:52,h:52},
+    {l:'E',x:W-116,y:H-57,w:48,h:44},
+  ];
+  btns.forEach(function(b){
+    ctx.globalAlpha=0.45;ctx.fillStyle='#fff';
+    rrect(ctx,b.x,b.y,b.w,b.h,8);ctx.fill();
+    ctx.globalAlpha=1;ctx.fillStyle='#1a3a1a';
+    ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+    ctx.fillText(b.l,b.x+b.w/2,b.y+b.h/2+6);
+  });
+}
+
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function drawOverlay(t1,t2,btn){
+  ctx.fillStyle='rgba(8,24,8,0.78)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#52b788';ctx.font='bold 52px sans-serif';ctx.textAlign='center';
+  ctx.fillText(pts+' pts',W/2,140);
+  ctx.fillStyle='#fff';ctx.font='bold 24px sans-serif';ctx.fillText(t1,W/2,186);
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='15px sans-serif';ctx.fillText(t2,W/2,216);
+  ctx.fillStyle='#52b788';rrect(ctx,W/2-95,238,190,50,12);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.fillText(btn,W/2,269);
+}
+
+function drawMenu(){
+  drawBg();drawTrees();drawPlats();drawBins();
+  ctx.fillStyle='rgba(8,24,8,0.70)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#52ff7a';ctx.font='bold 38px sans-serif';ctx.textAlign='center';
+  ctx.fillText('O Capitão  ♻',W/2,108);
+  ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='italic 12px sans-serif';
+  ctx.fillText('"Capitão. Ordem dos Resíduos. E esse resto tem servico."',W/2,130);
+  ctx.fillStyle='#fff';ctx.font='15px sans-serif';
+  ctx.fillText('Colete os materiais e descarte na lixeira correta!',W/2,155);
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';
+  ctx.fillText('← → mover  |  ↑ / Espaço pular  |  E coletar/descartar',W/2,180);
+  // legenda lixeiras
+  var lx=W/2-205;
+  BINS.forEach(function(b,i){
+    ctx.fillStyle=b.col;ctx.fillRect(lx+i*82,200,16,16);
+    ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(b.label,lx+i*82+20,213);
+  });
+  ctx.fillStyle='#52b788';rrect(ctx,W/2-92,232,184,50,12);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+  ctx.fillText('▶ Jogar',W/2,263);
+}
+
+// ── LOOP ────────────────────────────────────────────────
+function loop(){
+  if(state==='menu'){drawMenu();requestAnimationFrame(loop);return;}
+  update();
+  ctx.clearRect(0,0,W,H);
+  drawBg();drawTrees();drawBins();drawPlats();
+  drawItems();drawParticles();drawPlayer();
+  drawTouchUI();drawHUD2();drawWrong();
+  if(state==='win')drawOverlay('Missão cumprida! 🎖️','O Capitão limpou tudo! C.O.R. aprovado!','▶ Nova missão');
+  if(state==='gameover')drawOverlay('Missão falhou!','O Capitão fez '+pts+' pontos ♻️','▶ Tentar de novo');
+  requestAnimationFrame(loop);
+}
+
+// ── CONTROLES ───────────────────────────────────────────
+document.addEventListener('keydown',function(e){keys[e.key]=true;if(e.key===' ')e.preventDefault();});
+document.addEventListener('keyup',function(e){keys[e.key]=false;});
+
+CV.addEventListener('click',function(e){
+  var r=CV.getBoundingClientRect(),sc=W/r.width;
+  var mx=(e.clientX-r.left)*sc,my=(e.clientY-r.top)*(H/r.height);
+  if(state!=='playing'&&mx>W/2-92&&mx<W/2+92&&my>232&&my<282)init();
+});
+
+CV.addEventListener('touchstart',function(e){
+  var r=CV.getBoundingClientRect(),sc=W/r.width,sh=H/r.height;
+  Array.from(e.touches).forEach(function(t){
+    var tx=(t.clientX-r.left)*sc,ty=(t.clientY-r.top)*sh;
+    if(state!=='playing'){if(tx>W/2-92&&tx<W/2+92&&ty>232&&ty<282)init();return;}
+    if(tx>8&&tx<56&&ty>H-57)tL=true;
+    if(tx>62&&tx<110&&ty>H-57)tR=true;
+    if(tx>W-58&&ty>H-67)tJ=true;
+    if(tx>W-116&&tx<W-68&&ty>H-60)tE=true;
+  });
+  e.preventDefault();
+},{passive:false});
+CV.addEventListener('touchend',function(){tL=false;tR=false;tJ=false;tE=false;});
+
+loop();
+</script>
