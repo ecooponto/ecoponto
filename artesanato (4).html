@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artesanato Sustentável | EcoMapa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --ink:#0e1a10;--forest:#1a4028;--moss:#2d6a4f;--leaf:#52b788;
+      --sage:#95d5b2;--mist:#d8f3dc;--cream:#f4f7f4;--gold:#c9a84c;--white:#ffffff;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',Arial,sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* HEADER */
+    .header{background:linear-gradient(160deg,#0e2218,var(--forest));padding:20px 0 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.2);}
+    .header-inner{max-width:1200px;margin:0 auto;padding:0 24px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .header-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+    .header-logo span{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:900;color:var(--white);}
+    .header-back{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);border-radius:100px;padding:8px 16px;font-size:0.82rem;font-weight:600;text-decoration:none;transition:all 0.22s;}
+    .header-back:hover{background:rgba(255,255,255,0.18);color:var(--white);}
+    .header-title{max-width:1200px;margin:0 auto;padding:0 24px 28px;}
+    .header-title h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.7rem,3vw,2.3rem);font-weight:900;color:var(--white);margin-bottom:6px;}
+    .header-title p{color:rgba(255,255,255,0.6);font-size:0.92rem;}
+
+    /* FILTROS */
+    .filtros-wrap{max-width:1200px;margin:28px auto 0;padding:0 24px;display:flex;gap:8px;flex-wrap:wrap;}
+    .filtro-btn{padding:8px 20px;border-radius:100px;border:1.5px solid rgba(26,64,40,0.15);background:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'DM Sans',Arial,sans-serif;color:var(--forest);transition:all 0.2s;box-shadow:0 2px 8px rgba(26,64,40,0.05);}
+    .filtro-btn.active,.filtro-btn:hover{background:var(--forest);color:var(--white);border-color:var(--forest);}
+
+    /* GRID */
+    .art-grid{max-width:1200px;margin:24px auto 60px;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+
+    /* CARDS */
+    .art-card{background:var(--white);border-radius:24px;overflow:hidden;cursor:pointer;box-shadow:0 4px 20px rgba(26,64,40,0.07);transition:transform 0.3s,box-shadow 0.3s;border:1.5px solid rgba(26,64,40,0.05);}
+    .art-card:hover{transform:translateY(-8px);box-shadow:0 20px 44px rgba(26,64,40,0.14);}
+    .art-thumb{background:linear-gradient(145deg,#0f2a1a,var(--forest));height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+    .art-thumb::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(82,183,136,0.25),transparent 65%);}
+    .art-bg-emoji{position:absolute;top:14px;right:16px;font-size:2.6rem;opacity:0.12;}
+    .art-play-btn{width:60px;height:60px;background:rgba(255,255,255,0.13);border:2px solid rgba(255,255,255,0.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--white);transition:all 0.28s;z-index:1;}
+    .art-card:hover .art-play-btn{background:var(--leaf);border-color:var(--leaf);color:var(--ink);transform:scale(1.13);}
+    .art-thumb.yt-thumb{background:#111;}
+    .art-thumb.yt-thumb::before{display:none;}
+    .art-thumb.yt-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.82;transition:opacity 0.25s;}
+    .art-card:hover .art-thumb.yt-thumb img{opacity:1;}
+    .art-card:hover .art-thumb.yt-thumb .art-play-btn{background:#ff0000;border-color:#ff0000;color:#fff;}
+    .art-body{padding:18px 20px 22px;}
+    .art-tag{display:inline-block;background:var(--mist);color:var(--moss);border-radius:100px;padding:3px 12px;font-size:0.7rem;font-weight:700;margin-bottom:9px;}
+    .art-body h4{font-family:'Playfair Display',Georgia,serif;font-size:1.05rem;color:var(--forest);margin-bottom:5px;}
+    .art-body p{font-size:0.82rem;color:#7a8c7e;}
+
+    /* EMPTY STATE */
+    .art-empty{grid-column:1/-1;text-align:center;padding:60px 24px;color:#7a8c7e;}
+    .art-empty i{font-size:3rem;color:var(--sage);display:block;margin-bottom:14px;}
+
+    /* MODAL TUTORIAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,18,10,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:24px;padding:32px;max-width:520px;width:100%;position:relative;animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
+    @keyframes popIn{from{transform:scale(0.88) translateY(14px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+    .modal-close{position:absolute;top:14px;right:18px;font-size:1.4rem;cursor:pointer;color:#9eaba1;background:none;border:none;}
+    .modal-box h3{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;color:var(--forest);margin-bottom:14px;padding-right:24px;}
+    .materiais-box{background:var(--mist);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:0.84rem;color:var(--forest);}
+    .materiais-box strong{display:block;margin-bottom:4px;}
+    .tutorial-step h4{font-family:'Playfair Display',Georgia,serif;color:var(--forest);font-size:1rem;margin-bottom:6px;text-align:center;}
+    .tutorial-step p{font-size:0.84rem;color:#5a6b5e;text-align:center;margin-bottom:12px;}
+    .tutorial-step svg{display:block;margin:0 auto;max-width:100%;}
+    .tut-nav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+    .tut-btn{background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:8px 20px;font-family:'DM Sans',Arial,sans-serif;font-weight:600;font-size:0.84rem;cursor:pointer;transition:background 0.2s;}
+    .tut-btn:hover{background:var(--moss);}
+    .tut-btn:disabled{background:#ccc;cursor:default;}
+    .tut-counter{font-size:0.8rem;color:#7a8c7e;}
+    .btn-fechar{display:inline-flex;align-items:center;gap:6px;margin-top:20px;background:var(--forest);color:var(--white);border:none;padding:10px 24px;border-radius:100px;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-weight:600;font-size:0.88rem;transition:background 0.2s;}
+    .btn-fechar:hover{background:var(--moss);}
+
+    /* SUBMIT BANNER */
+    .submit-banner{max-width:1200px;margin:0 auto 40px;padding:0 24px;}
+    .submit-box{background:linear-gradient(135deg,var(--forest),var(--moss));border-radius:22px;padding:28px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .submit-box i{font-size:2.5rem;color:var(--sage);flex-shrink:0;}
+    .submit-box div{flex:1;}
+    .submit-box h3{font-family:'Playfair Display',Georgia,serif;color:var(--white);font-size:1.15rem;margin-bottom:4px;}
+    .submit-box p{color:rgba(255,255,255,0.65);font-size:0.88rem;}
+    .submit-box a{display:inline-flex;align-items:center;gap:7px;background:var(--leaf);color:var(--ink);border-radius:100px;padding:10px 22px;font-weight:700;font-size:0.88rem;text-decoration:none;transition:all 0.25s;flex-shrink:0;margin-top:4px;}
+    .submit-box a:hover{background:var(--sage);transform:translateY(-2px);}
+
+    /* FOOTER */
+    .footer{background:#080f09;padding:24px;text-align:center;}
+    .footer p{color:rgba(255,255,255,0.28);font-size:0.82rem;}
+    .footer span{color:var(--leaf);}
+
+    @media(max-width:700px){
+      .art-grid{padding:0 16px;grid-template-columns:1fr 1fr;}
+      .filtros-wrap{padding:0 16px;}
+      .header-inner{padding:0 16px 16px;}
+      .header-title{padding:0 16px 24px;}
+      .submit-banner{padding:0 16px;}
+    }
+    @media(max-width:420px){
+      .art-grid{grid-template-columns:1fr;}
+    }
+
+    /* ===== GAME BANNER ===== */
+    .game-banner{max-width:1200px;margin:0 auto 32px;padding:0 24px;}
+    .game-box{
+      background:linear-gradient(135deg,#0e2218,#1a4028);
+      border-radius:22px;padding:28px 32px;
+      display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+      border:1.5px solid rgba(82,183,136,0.2);
+      box-shadow:0 8px 32px rgba(0,0,0,0.2);
+      position:relative;overflow:hidden;
+    }
+    .game-box::before{
+      content:'♻️';position:absolute;right:24px;top:50%;
+      transform:translateY(-50%);font-size:80px;opacity:0.08;
+    }
+    .game-box-icon{font-size:52px;flex-shrink:0;animation:spinSlow 8s linear infinite;}
+    @keyframes spinSlow{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    .game-box-text{flex:1;}
+    .game-box-text h3{
+      font-family:'Playfair Display',Georgia,serif;
+      color:var(--white);font-size:1.3rem;margin-bottom:6px;
+    }
+    .game-box-text p{color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.5;}
+    .game-play-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--leaf);color:var(--ink);
+      border:none;border-radius:100px;padding:12px 26px;
+      font-weight:700;font-size:0.92rem;
+      cursor:pointer;font-family:'DM Sans',Arial,sans-serif;
+      transition:all 0.25s;flex-shrink:0;
+      box-shadow:0 4px 14px rgba(82,183,136,0.35);
+    }
+    .game-play-btn:hover{background:var(--sage);transform:translateY(-2px);}
+
+    /* ===== GAME MODAL ===== */
+    /* ===== GAME FULLSCREEN ===== */
+    #gameModal{
+      display:none;position:fixed;inset:0;
+      background:#000;
+      z-index:2000;
+      flex-direction:column;
+    }
+    #gameModal.open{display:flex;}
+    .game-modal-bar{
+      background:linear-gradient(135deg,#0e2218,#1a4028);
+      padding:10px 16px;
+      display:flex;justify-content:space-between;align-items:center;
+      flex-shrink:0;
+      border-bottom:1px solid rgba(82,183,136,0.2);
+    }
+    .game-modal-bar span{color:#fff;font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:8px;}
+    .game-bar-btns{display:flex;gap:8px;align-items:center;}
+    .game-bar-btn{
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.15);
+      color:#fff;border-radius:8px;
+      padding:6px 14px;font-size:0.8rem;font-weight:600;
+      cursor:pointer;display:flex;align-items:center;gap:6px;
+      transition:all 0.18s;font-family:inherit;
+    }
+    .game-bar-btn:hover{background:rgba(255,255,255,0.2);}
+    .game-bar-btn.close-btn{background:rgba(220,50,50,0.2);border-color:rgba(220,50,50,0.3);}
+    .game-bar-btn.close-btn:hover{background:rgba(220,50,50,0.45);}
+    #gameFrame{
+      flex:1;border:none;width:100%;height:100%;
+      display:block;
+    }
+
+    /* GAME CARD no grid */
+    .art-thumb.game-thumb{
+      background:linear-gradient(145deg,#0e2218,#2d6a4f);
+    }
+    .game-thumb-emoji{font-size:52px;z-index:1;}
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="index.html" class="header-logo">
+      <svg width="26" height="26" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
+        <path d="M340 80C295 80 258 117 258 162C258 222 340 310 340 310L340 80Z" fill="#1a4028"/>
+        <path d="M340 80C385 80 422 117 422 162C422 222 340 310 340 310L340 80Z" fill="#52b788"/>
+        <path d="M340 178C340 178 316 166 318 148C322 148 334 156 336 166C336 156 332 142 338 138C342 148 340 178 340 178Z" fill="#95d5b2"/>
+      </svg>
+      <span>EcoMapa</span>
+    </a>
+    <a href="index.html" class="header-back"><i class="fas fa-arrow-left"></i> Voltar ao site</a>
+  </div>
+  <div class="header-title">
+    <h1>&#127912; Artesanato Sustent&#225;vel</h1>
+    <p>Tutoriais passo a passo com materiais recicl&#225;veis. Novos tutoriais sendo adicionados!</p>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="filtros-wrap">
+  <button class="filtro-btn active" data-filtro="todos">Todos</button>
+  <button class="filtro-btn" data-filtro="jogo">Jogos</button>
+  <button class="filtro-btn" data-filtro="brinquedo">Brinquedos</button>
+  <button class="filtro-btn" data-filtro="artesanato">Artesanato</button>
+  <button class="filtro-btn" data-filtro="horta">Hortas</button>
+  <button class="filtro-btn" data-filtro="decoracao">Decora&#231;&#227;o</button>
+  <button class="filtro-btn" data-filtro="util">&#218;teis</button>
+</div>
+
+<!-- GRID -->
+<div class="art-grid" id="artGrid"></div>
+
+
+<!-- GAME BANNER -->
+<div class="game-banner">
+  <div class="game-box">
+    <div class="game-box-icon">♻️</div>
+    <div class="game-box-text">
+      <h3>🎮 O Capitão ♻ — Coleta Seletiva</h3>
+      <p>Ajude o Capitão da Ordem dos Resíduos a coletar e descartar cada material na lixeira correta. Funciona no celular e no PC!</p>
+    </div>
+    <button class="game-play-btn" onclick="abrirJogo()">
+      ▶ Jogar agora
+    </button>
+  </div>
+</div>
+
+<!-- BANNER ENVIAR -->
+<div class="submit-banner">
+  <div class="submit-box">
+    <i class="fas fa-camera"></i>
+    <div>
+      <h3>Tem um artesanato para compartilhar?</h3>
+      <p>Mande foto e descri&#231;&#227;o para o nosso e-mail — pode virar tutorial aqui!</p>
+    </div>
+    <a href="/cdn-cgi/l/email-protection#abcec8c4c4dbc4c5dfc4ebccc6cac2c785c8c4c694d8dec9c1cec8df96ead9dfced8cac5cadfc48bdbcad9ca8bc48beec8c4e6cadbca">
+      <i class="fas fa-envelope"></i> Enviar meu artesanato
+    </a>
+  </div>
+</div>
+
+
+<!-- GAME MODAL FULLSCREEN -->
+<div id="gameModal">
+  <div class="game-modal-bar">
+    <span id="modalGameTitle">♻️ O Capitão — Ordem dos Resíduos</span>
+    <div class="game-bar-btns">
+      <button class="game-bar-btn" onclick="toggleFullscreen()" id="fsBtn" title="Tela cheia">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Tela cheia
+      </button>
+      <button class="game-bar-btn close-btn" onclick="fecharJogo()">
+        ✕ Fechar
+      </button>
+    </div>
+  </div>
+  <div id="gameFrame" style="flex:1;background:#1a3a1a;overflow:hidden;display:flex;flex-direction:column;min-height:0;">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:linear-gradient(90deg,#1a3a1a,#2d5a2d);border-bottom:2px solid #3a7a3a;flex-shrink:0;">
+    <span style="color:#fff;font-size:13px;font-weight:600;">⭐ <strong id="pts">0</strong> pts</span>
+    <span id="carry-hud" style="background:rgba(255,255,255,0.15);padding:4px 14px;border-radius:20px;min-width:100px;text-align:center;font-size:12px;border:1px solid rgba(255,255,255,0.2);">nada</span>
+    <span id="vidas">❤️❤️❤️</span>
+  </div>
+  <div style="flex:1;position:relative;overflow:hidden;min-height:0;">
+    <canvas id="c" style="display:block;width:100%;height:100%;"></canvas>
+  </div>
+  <div style="text-align:center;padding:4px 0;font-size:10px;color:#8aaa8a;background:#1a3a1a;flex-shrink:0;">← → mover &nbsp;|&nbsp; ↑/Espaço pular &nbsp;|&nbsp; E coletar/descartar</div>
+</div>
+<script>
+(function(){
+  var canvas=document.getElementById('c');
+  if(canvas){canvas.width=680;canvas.height=440;}
+  window.addEventListener('resize',function(){
+    if(canvas){canvas.width=680;canvas.height=440;}
+  });
+})();
+</script>
+<script>
+
+var CV=document.getElementById('c'),ctx=CV.getContext('2d');
+var W=680,H=440;CV.width=W;CV.height=H;
+
+// ── CORES CONAMA ────────────────────────────────────────
+var BINS=[
+  {tipo:'papel',    label:'Papel',    col:'#2176ff', border:'#0d4fc2', icon:'📄', x:30,  w:62,h:76},
+  {tipo:'plastico', label:'Plástico', col:'#e63946', border:'#a01c28', icon:'🧴', x:110, w:62,h:76},
+  {tipo:'vidro',    label:'Vidro',    col:'#2dc653', border:'#1a8a38', icon:'🍾', x:190, w:62,h:76},
+  {tipo:'metal',    label:'Metal',    col:'#ffd60a', border:'#9a8200', icon:'🥫', x:270, w:62,h:76},
+  {tipo:'organico', label:'Orgânico', col:'#8B4513', border:'#5a2a0a', icon:'🍌', x:350, w:62,h:76},
+];
+
+var ITEM_TYPES=[
+  {tipo:'papel',    e:'📰',label:'Papel'},
+  {tipo:'papel',    e:'📦',label:'Papel'},
+  {tipo:'plastico', e:'🧴',label:'Plástico'},
+  {tipo:'plastico', e:'🪣',label:'Plástico'},
+  {tipo:'vidro',    e:'🍾',label:'Vidro'},
+  {tipo:'vidro',   e:'🫙',label:'Vidro'},
+  {tipo:'metal',    e:'🥫',label:'Metal'},
+  {tipo:'metal',    e:'⚙️', label:'Metal'},
+  {tipo:'organico', e:'🍌',label:'Orgânico'},
+  {tipo:'organico', e:'🍎',label:'Orgânico'},
+];
+
+var GROUND_Y=378;
+var PLATS=[
+  {x:0,   y:GROUND_Y,w:W,  h:H-GROUND_Y},
+  {x:85,  y:298,w:115,h:14},
+  {x:280, y:268,w:110,h:14},
+  {x:460, y:292,w:125,h:14},
+  {x:175, y:216,w:92, h:14},
+  {x:375, y:198,w:92, h:14},
+  {x:555, y:220,w:108,h:14},
+];
+
+var ITEM_SPOTS=[
+  {x:100,y:270},{x:138,y:270},
+  {x:295,y:240},{x:330,y:240},
+  {x:474,y:264},{x:512,y:264},
+  {x:188,y:188},{x:220,y:188},
+  {x:390,y:170},{x:424,y:170},
+  {x:470,y:348},{x:580,y:348},
+];
+
+var TREES=[
+  {x:52, cy:272,r:30,trunk:9},
+  {x:248,cy:264,r:27,trunk:8},
+  {x:500,cy:255,r:28,trunk:9},
+  {x:638,cy:260,r:25,trunk:8},
+];
+var CLOUDS=[[85,40,1.1],[240,27,0.9],[440,44,1.0],[598,32,0.85]];
+
+var t0=Date.now();
+var state='menu',pts=0,vidas=3;
+var player,items,particles;
+var keys={},tL=false,tR=false,tJ=false,tE=false;
+var wrongAnim=0,binFlash={};
+
+function init(){
+  player={
+    x:80,y:320,w:24,h:40,
+    vx:0,vy:0,onGround:false,
+    dir:1,
+    walkPhase:0,
+    collectAnim:0,cooldown:0,carrying:null,
+    footL:0,footR:0,armL:0,armR:0,
+    bobY:0,
+    jumpState:0,
+  };
+  items=ITEM_SPOTS.map(function(s,i){
+    var t=ITEM_TYPES[i%ITEM_TYPES.length];
+    return{x:s.x,y:s.y,e:t.e,tipo:t.tipo,label:t.label,
+           bob:Math.random()*Math.PI*2,collected:false};
+  });
+  particles=[];pts=0;vidas=3;wrongAnim=0;binFlash={};
+  state='playing';updateHud();
+}
+
+function updateHud(){
+  document.getElementById('pts').textContent=pts;
+  var v='';for(var i=0;i<vidas;i++)v+='❤️';for(var i=vidas;i<3;i++)v+='🖤';
+  document.getElementById('vidas').textContent=v;
+  var ch=document.getElementById('carry-hud');
+  ch.textContent=player&&player.carrying?'🤲 '+player.carrying.e+' '+player.carrying.label:'nada';
+}
+
+// ── FÍSICA ──────────────────────────────────────────────
+var GRAV=0.88,JUMP=-14.5,WALK=3.8,FRIC=0.75;
+
+function onPlat(p){
+  return player.x+player.w>p.x&&player.x<p.x+p.w&&
+         player.y+player.h>p.y&&player.y+player.h<p.y+p.h+8&&player.vy>=0;
+}
+
+function update(){
+  if(state!=='playing')return;
+  if(wrongAnim>0)wrongAnim--;
+  Object.keys(binFlash).forEach(function(k){if(binFlash[k]>0)binFlash[k]--;});
+
+  var L=keys['ArrowLeft']||keys['a']||tL;
+  var R=keys['ArrowRight']||keys['d']||tR;
+  var J=keys['ArrowUp']||keys['w']||keys[' ']||tJ;
+  var E=keys['e']||keys['E']||tE;
+
+  if(L){player.vx-=1.4;player.dir=-1;}
+  if(R){player.vx+=1.4;player.dir=1;}
+  player.vx=Math.max(-WALK,Math.min(WALK,player.vx));
+  if(!L&&!R)player.vx*=FRIC;
+  if(Math.abs(player.vx)<0.05)player.vx=0;
+
+  if(J&&player.onGround){player.vy=JUMP;player.onGround=false;}
+  player.vy+=GRAV;
+  player.x+=player.vx;player.y+=player.vy;
+  player.x=Math.max(0,Math.min(W-player.w,player.x));
+
+  player.onGround=false;
+  PLATS.forEach(function(p){if(onPlat(p)){player.y=p.y-player.h;player.vy=0;player.onGround=true;}});
+  if(player.y>H+60){loseLife();return;}
+
+  // ── ANIMAÇÃO SENOIDAL FLUIDA ────────────────────────────
+  var spd=Math.abs(player.vx);
+  if(player.onGround&&spd>0.2) player.walkPhase+=spd*0.17;
+  player.jumpState=player.onGround?0:(player.vy<0?1:2);
+
+  var targetFL,targetFR,targetAL,targetAR,targetBob;
+  if(!player.onGround){
+    targetFL=-20;targetFR=20;targetAL=-22;targetAR=22;targetBob=0;
+  } else if(spd>0.2){
+    var s=Math.sin(player.walkPhase);
+    var amp=13+spd*2.0;
+    targetFL= s*amp;
+    targetFR=-s*amp;
+    targetAL=-Math.cos(player.walkPhase)*amp*0.55;
+    targetAR= Math.cos(player.walkPhase)*amp*0.55;
+    targetBob=Math.abs(Math.sin(player.walkPhase*2))*-2.2;
+  } else {
+    targetFL=0;targetFR=0;targetAL=0;targetAR=0;targetBob=0;
+  }
+  var lerp=0.17;
+  player.footL+=(targetFL-player.footL)*lerp;
+  player.footR+=(targetFR-player.footR)*lerp;
+  player.armL +=(targetAL-player.armL )*lerp;
+  player.armR +=(targetAR-player.armR )*lerp;
+  player.bobY +=(targetBob-player.bobY)*0.22;
+
+  if(player.collectAnim>0)player.collectAnim--;
+  if(player.cooldown>0)player.cooldown--;
+  items.forEach(function(it){if(!it.collected)it.bob+=0.055;});
+
+  // ── INTERAÇÃO ───────────────────────────────────────────
+  if(E&&player.cooldown===0){
+    player.cooldown=18;
+    if(!player.carrying){
+      var best=null,bd=999;
+      items.forEach(function(it){
+        if(it.collected)return;
+        var dx=(player.x+12)-(it.x+14),dy=(player.y+20)-(it.y+14);
+        var d=Math.sqrt(dx*dx+dy*dy);
+        if(d<56&&d<bd){bd=d;best=it;}
+      });
+      if(best){best.collected=true;player.carrying=best;player.collectAnim=24;updateHud();}
+    } else {
+      var dropped=false;
+      BINS.forEach(function(b){
+        if(dropped)return;
+        var cx=player.x+12;
+        var binY=GROUND_Y-b.h-2;
+        // jogador no chão principal e perto da lixeira no eixo x
+        if(cx>b.x-16&&cx<b.x+b.w+16&&player.onGround&&player.y+player.h>=GROUND_Y-4){
+          dropped=true;
+          if(player.carrying.tipo===b.tipo){
+            pts+=20;player.collectAnim=40;
+            spawnParts(b.x+b.w/2,binY+b.h/2,b.col,16);
+            binFlash[b.tipo]=30;
+            player.carrying=null;updateHud();
+            if(items.every(function(i){return i.collected;})&&!player.carrying)
+              setTimeout(function(){state='win';},700);
+          } else {
+            wrongAnim=60;spawnParts(player.x+12,player.y+10,'#e63946',10);
+            vidas--;updateHud();
+            player.carrying=null;updateHud();
+            if(vidas<=0){state='gameover';}
+          }
+        }
+      });
+    }
+  }
+
+  particles=particles.filter(function(p){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.22;p.life--;return p.life>0;
+  });
+}
+
+function loseLife(){
+  vidas--;updateHud();
+  if(player.carrying){player.carrying=null;updateHud();}
+  player.x=80;player.y=320;player.vx=0;player.vy=0;
+  if(vidas<=0)state='gameover';
+}
+
+function spawnParts(x,y,col,n){
+  for(var i=0;i<n;i++){
+    var a=(Math.PI*2/n)*i+Math.random()*0.5;
+    var s=1.8+Math.random()*3.5;
+    particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.2,
+                    life:28+Math.random()*14,col:col,r:2.5+Math.random()*3});
+  }
+}
+
+// ── DESENHO FUNDO ───────────────────────────────────────
+function drawBg(){
+  var t=(Date.now()-t0)*0.001;
+  var g=ctx.createLinearGradient(0,0,0,GROUND_Y);
+  g.addColorStop(0,'#5ba3d4');g.addColorStop(1,'#a8d8b8');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='rgba(255,255,255,0.82)';
+  CLOUDS.forEach(function(c,i){
+    var ox=((t*10*(i%2===0?1:-1))%W+W)%W;
+    var cx=(c[0]+ox)%W;var s=c[2];
+    drawCloud(cx,c[1],s);
+    if(cx+80*s>W)drawCloud(cx-W,c[1],s);
+  });
+
+  // chão
+  ctx.fillStyle='#5a8c3a';ctx.fillRect(0,GROUND_Y,W,10);
+  ctx.fillStyle='#8B5E3C';ctx.fillRect(0,GROUND_Y+10,W,H-GROUND_Y-10);
+  ctx.fillStyle='#3d6b27';
+  for(var xi=4;xi<W;xi+=16){
+    ctx.beginPath();ctx.arc(xi+6,GROUND_Y,4,Math.PI,0);ctx.fill();
+  }
+}
+
+function drawCloud(cx,cy,s){
+  ctx.beginPath();ctx.ellipse(cx,cy,40*s,18*s,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+22*s,cy+3*s,26*s,14*s,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx-18*s,cy+4*s,22*s,12*s,0,0,Math.PI*2);ctx.fill();
+}
+
+function drawTrees(){
+  TREES.forEach(function(t){
+    ctx.fillStyle='#6b4423';ctx.fillRect(t.x-t.trunk/2,t.cy,t.trunk,52);
+    ctx.fillStyle='#2a6042';ctx.beginPath();ctx.arc(t.x,t.cy,t.r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#348a56';ctx.beginPath();ctx.arc(t.x+t.r*0.42,t.cy-t.r*0.3,t.r*0.62,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#52b788';ctx.beginPath();ctx.arc(t.x-t.r*0.28,t.cy-t.r*0.18,t.r*0.44,0,Math.PI*2);ctx.fill();
+  });
+}
+
+function drawPlats(){
+  PLATS.forEach(function(p,i){
+    if(i===0)return;
+    ctx.fillStyle='#7a9e4a';ctx.fillRect(p.x,p.y,p.w,p.h);
+    ctx.fillStyle='#5a7a35';ctx.fillRect(p.x,p.y+5,p.w,p.h-5);
+    ctx.fillStyle='#8fba56';
+    for(var xi=p.x+4;xi<p.x+p.w;xi+=12){
+      ctx.beginPath();ctx.arc(xi,p.y,3,Math.PI,0);ctx.fill();
+    }
+  });
+}
+
+// ── LIXEIRAS ────────────────────────────────────────────
+function drawBins(){
+  // zona de descarte visual
+  ctx.fillStyle='rgba(200,230,200,0.13)';
+  ctx.fillRect(18,GROUND_Y-90,420,90);
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+  ctx.setLineDash([5,4]);
+  ctx.strokeRect(19,GROUND_Y-89,418,88);
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,0.28)';
+  ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+  ctx.fillText('▼ DESCARTE AQUI ▼',228,GROUND_Y-93);
+
+  BINS.forEach(function(b){
+    var binY=GROUND_Y-b.h-2;
+    var flash=binFlash[b.tipo]>0;
+    var col=flash?'#ffffff':b.col;
+
+    // sombra elíptica
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.beginPath();ctx.ellipse(b.x+b.w/2,GROUND_Y+3,b.w/2-3,5,0,0,Math.PI*2);ctx.fill();
+
+    // CORPO trapezoidal
+    ctx.fillStyle=col;
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+b.w-5,binY+14);
+    ctx.lineTo(b.x+b.w+2,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.fill();
+
+    // borda
+    ctx.strokeStyle=b.border;ctx.lineWidth=2.2;
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+b.w-5,binY+14);
+    ctx.lineTo(b.x+b.w+2,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.stroke();
+
+    // brilho esquerdo
+    ctx.fillStyle='rgba(255,255,255,0.16)';
+    ctx.beginPath();
+    ctx.moveTo(b.x+5,binY+14);ctx.lineTo(b.x+13,binY+14);
+    ctx.lineTo(b.x+15,binY+b.h);ctx.lineTo(b.x-2,binY+b.h);
+    ctx.closePath();ctx.fill();
+
+    // linha horizontal meio
+    ctx.strokeStyle='rgba(0,0,0,0.13)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(b.x+1,binY+b.h*0.55);ctx.lineTo(b.x+b.w-1,binY+b.h*0.55);ctx.stroke();
+
+    // TAMPA
+    ctx.fillStyle=b.border;ctx.fillRect(b.x-4,binY+5,b.w+8,11);
+    ctx.fillStyle=flash?'#ffffffcc':col;ctx.fillRect(b.x-1,binY+7,b.w+2,7);
+
+    // alça
+    ctx.strokeStyle=b.border;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(b.x+b.w/2,binY+3,7,Math.PI,0);ctx.stroke();
+
+    // símbolo ♻
+    ctx.fillStyle='rgba(255,255,255,0.88)';
+    ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('♻',b.x+b.w/2,binY+40);
+
+    // RODINHAS (detalhe do v3)
+    ctx.fillStyle='#222';
+    ctx.beginPath();ctx.arc(b.x+10,binY+b.h+3,4.5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(b.x+b.w-10,binY+b.h+3,4.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#666';
+    ctx.beginPath();ctx.arc(b.x+10,binY+b.h+3,2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(b.x+b.w-10,binY+b.h+3,2,0,Math.PI*2);ctx.fill();
+
+    // LABEL colorido
+    var lx=b.x+b.w/2,ly=binY-6;
+    ctx.fillStyle=flash?'#ffffcc':b.col;
+    ctx.fillRect(b.x-3,ly-18,b.w+6,22);
+    ctx.strokeStyle=b.border;ctx.lineWidth=1.5;
+    ctx.strokeRect(b.x-3,ly-18,b.w+6,22);
+    ctx.fillStyle='#fff';
+    ctx.font='bold 8.5px sans-serif';ctx.textAlign='center';
+    ctx.fillText(b.label.toUpperCase(),lx,ly-4);
+    ctx.font='10px serif';ctx.fillText(b.icon,lx,ly+8);
+
+    // flash glow
+    if(flash){
+      ctx.globalAlpha=0.32;
+      ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.arc(b.x+b.w/2,binY+b.h/2,33,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  });
+}
+
+function drawItems(){
+  items.forEach(function(it){
+    if(it.collected)return;
+    var by=Math.sin(it.bob)*4;
+    ctx.globalAlpha=0.18;ctx.fillStyle='#000';
+    ctx.beginPath();ctx.ellipse(it.x+14,it.y+27+by,9,3.5,0,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.globalAlpha=0.16+Math.sin(it.bob)*0.07;
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(it.x+14,it.y+10+by,13,0,Math.PI*2);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.font='22px serif';ctx.textAlign='center';
+    ctx.fillText(it.e,it.x+14,it.y+18+by);
+  });
+}
+
+function drawParticles(){
+  particles.forEach(function(p){
+    ctx.globalAlpha=p.life/42;
+    ctx.fillStyle=p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+}
+
+// ── O CAPITÃO — C.O.R. ──────────────────────────────────
+// Uniforme verde militar, boné com emblema ♻, luvas verdes,
+// cinto tático marrom, mochila de agente, faixa verde/amarela
+function drawPlayer(){
+  var p=player;
+  var flip=p.dir===-1;
+  var px=Math.round(p.x);
+  var py=Math.round(p.y+p.bobY);
+  var glow=p.collectAnim>0;
+  var cx=px+12;
+
+  ctx.save();
+  if(flip){ctx.translate(px+p.w,0);ctx.scale(-1,1);cx=p.w-12;}
+
+  // brilho ao coletar
+  if(glow){
+    ctx.globalAlpha=0.3+Math.sin(Date.now()/65)*0.12;
+    ctx.fillStyle='#52ff7a';
+    ctx.beginPath();ctx.arc(cx,py+18,24,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // sombra chão
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.ellipse(cx,py+p.h+3,10,4,0,0,Math.PI*2);ctx.fill();
+
+  // ── PERNAS — calça verde escuro ──
+  drawLimb(ctx,cx-6,py+25,4,13,p.footL,'#2d5a1b','#1a3a0e');
+  drawLimb(ctx,cx+2, py+25,4,13,p.footR,'#336620','#1e4010');
+
+  // BOTAS pretas táticas
+  ctx.fillStyle='#1a1a1a';
+  ctx.save();
+  var sxL=cx-6+2+Math.sin(p.footL*0.017)*3;
+  ctx.translate(sxL,py+38);ctx.rotate(p.footL*0.017);
+  ctx.beginPath();ctx.ellipse(0,3,8,4.5,0,0,Math.PI*2);ctx.fill();
+  // detalhe bota
+  ctx.fillStyle='#333';ctx.fillRect(-5,0,9,3);
+  ctx.restore();
+  ctx.save();
+  var sxR=cx+2+2+Math.sin(p.footR*0.017)*3;
+  ctx.translate(sxR,py+38);ctx.rotate(p.footR*0.017);
+  ctx.beginPath();ctx.ellipse(0,3,8,4.5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#333';ctx.fillRect(-5,0,9,3);
+  ctx.restore();
+
+  // ── MOCHILA de agente (costas) ──
+  ctx.fillStyle='#5a3e1e';
+  ctx.beginPath();ctx.rect(cx+6,py+11,9,16);ctx.fill();
+  ctx.fillStyle='#7a5a30';ctx.fillRect(cx+7,py+12,7,5);
+  // tubo da mochila
+  ctx.strokeStyle='#8ab4d4';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(cx+10,py+13);
+  ctx.bezierCurveTo(cx+18,py+10,cx+18,py+20,cx+14,py+22);
+  ctx.stroke();
+
+  // ── CORPO — uniforme verde militar ──
+  // tronco principal
+  ctx.fillStyle='#3d6b22';
+  ctx.beginPath();
+  ctx.moveTo(cx-10,py+12);ctx.lineTo(cx+8,py+12);
+  ctx.lineTo(cx+7,py+26);ctx.lineTo(cx-9,py+26);
+  ctx.closePath();ctx.fill();
+  // textura/dobras do uniforme
+  ctx.fillStyle='rgba(0,0,0,0.12)';
+  ctx.fillRect(cx-10,py+12,3,14);
+  ctx.fillStyle='rgba(255,255,255,0.07)';
+  ctx.fillRect(cx-4,py+13,3,12);
+  // INSÍGNIA no peito (emblema C.O.R.)
+  ctx.fillStyle='#1a8a38';
+  ctx.beginPath();ctx.arc(cx-3,py+17,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#52ff7a';
+  ctx.font='bold 5px sans-serif';ctx.textAlign='center';
+  ctx.fillText('♻',cx-3,py+19);
+  // FAIXA verde/amarela no braço esquerdo
+  ctx.fillStyle='#ffd60a';ctx.fillRect(cx-13,py+19,3,3);
+  ctx.fillStyle='#2dc653';ctx.fillRect(cx-13,py+22,3,3);
+  // CINTO TÁTICO
+  ctx.fillStyle='#6b4a1e';
+  ctx.fillRect(cx-10,py+24,18,4);
+  // fivela dourada
+  ctx.fillStyle='#d4a017';
+  ctx.fillRect(cx-2,py+24,4,4);
+  ctx.fillStyle='#ffd60a';ctx.fillRect(cx-1,py+25,2,2);
+  // bolsinho do cinto
+  ctx.fillStyle='#5a3e1e';
+  ctx.fillRect(cx+4,py+24,4,5);
+
+  // ── BRAÇOS — luvas verdes ──
+  drawLimb(ctx,cx-11,py+13,3,11,p.armL,'#3d6b22','#2a4e18'); // braço esq
+  drawLimb(ctx,cx+8,  py+13,3,11,p.armR,'#3d6b22','#2a4e18'); // braço dir
+  // LUVAS
+  var gAng=p.armL*0.017;
+  ctx.save();
+  ctx.translate(cx-11+1+Math.sin(gAng)*2,py+24+Math.cos(gAng)*3);
+  ctx.rotate(gAng);
+  ctx.fillStyle='#1e6e2e';
+  ctx.beginPath();ctx.ellipse(0,0,4,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  var gAng2=p.armR*0.017;
+  ctx.save();
+  ctx.translate(cx+8+1+Math.sin(gAng2)*2,py+24+Math.cos(gAng2)*3);
+  ctx.rotate(gAng2);
+  ctx.fillStyle='#1e6e2e';
+  ctx.beginPath();ctx.ellipse(0,0,4,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // item na mão
+  if(p.carrying){
+    ctx.font='15px serif';ctx.textAlign='center';
+    ctx.fillText(p.carrying.e,cx+(flip?-19:19),py+14);
+  }
+
+  // ── CABEÇA — pele morena clara com sardas ──
+  // pescoço
+  ctx.fillStyle='#c87941';
+  ctx.fillRect(cx-4,py+5,8,7);
+  // cabeça
+  ctx.fillStyle='#d4895a';
+  ctx.beginPath();ctx.ellipse(cx,py+1,10,11,0,0,Math.PI*2);ctx.fill();
+  // orelha
+  ctx.fillStyle='#c87941';
+  ctx.beginPath();ctx.arc(cx-10,py+2,3.5,0,Math.PI*2);ctx.fill();
+  // cabelo escuro
+  ctx.fillStyle='#1a0a00';
+  ctx.beginPath();
+  ctx.ellipse(cx,py-8,10,5,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillRect(cx-10,py-8,4,6);
+  // sobrancelha esquerda
+  ctx.fillStyle='#1a0a00';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-8,py-4);ctx.lineTo(cx-1,py-5);ctx.stroke();
+  // sobrancelha direita
+  ctx.beginPath();ctx.moveTo(cx+1,py-5);ctx.lineTo(cx+8,py-4);ctx.stroke();
+  // olhos castanhos (como na arte)
+  ctx.fillStyle='#5a2a00';
+  ctx.beginPath();ctx.arc(cx-3,py+1,3,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+4,py+1,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1a0000';
+  ctx.beginPath();ctx.arc(cx-3,py+1,1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+4,py+1,1.8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(cx-2,py,0.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+5,py,0.8,0,Math.PI*2);ctx.fill();
+  // sorriso
+  ctx.strokeStyle='#8a4020';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,py+5,4,0.1,Math.PI-0.1);ctx.stroke();
+  // sardas
+  ctx.fillStyle='rgba(120,60,20,0.5)';
+  ctx.beginPath();ctx.arc(cx-5,py+4,1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+5,py+4,1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx-3,py+5,0.7,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+3,py+5,0.7,0,Math.PI*2);ctx.fill();
+
+  // ── BONÉ VERDE MILITAR ──
+  // aba
+  ctx.fillStyle='#2d5a1b';
+  ctx.beginPath();
+  ctx.moveTo(cx-11,py-6);ctx.lineTo(cx+14,py-6);
+  ctx.quadraticCurveTo(cx+16,py-5,cx+14,py-3);
+  ctx.lineTo(cx-11,py-3);ctx.closePath();ctx.fill();
+  // topo arredondado
+  ctx.fillStyle='#3a7022';
+  ctx.beginPath();ctx.ellipse(cx,py-12,11,9,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillRect(cx-11,py-12,22,7);
+  // linha da aba
+  ctx.fillStyle='#1a3e0e';ctx.fillRect(cx-11,py-6,25,2);
+  // EMBLEMA no boné — círculo verde com ♻
+  ctx.fillStyle='#1a5e28';
+  ctx.beginPath();ctx.arc(cx+1,py-11,5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#ffd60a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx+1,py-11,5,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#ffd60a';
+  ctx.font='bold 6px sans-serif';ctx.textAlign='center';
+  ctx.fillText('♻',cx+1,py-9);
+
+  ctx.restore();
+}
+
+function drawLimb(ctx,x,y,w,h,angleDeg,col1,col2){
+  ctx.save();
+  ctx.translate(x+w/2,y);
+  ctx.rotate(angleDeg*Math.PI/180);
+  ctx.fillStyle=col1;
+  ctx.beginPath();
+  ctx.moveTo(-w/2,0);ctx.lineTo(w/2,0);
+  ctx.lineTo(w/2+1,h);ctx.lineTo(-w/2-1,h);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle=col2;ctx.fillRect(w/2-1,0,2,h);
+  ctx.restore();
+}
+
+// ── HUD IN-GAME ─────────────────────────────────────────
+function drawHUD2(){
+  var left=items.filter(function(i){return!i.collected;}).length;
+  ctx.fillStyle='rgba(0,0,0,0.38)';
+  rrect(ctx,8,8,178,22,5);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('♻ Recicláveis restantes: '+left,15,23);
+
+  // seta + linha tracejada para lixeira correta
+  if(player&&player.carrying){
+    BINS.forEach(function(b){
+      if(b.tipo!==player.carrying.tipo)return;
+      var bx=b.x+b.w/2,by=GROUND_Y-b.h-2;
+      ctx.strokeStyle=b.col;ctx.lineWidth=2;ctx.globalAlpha=0.6;
+      ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(player.x+12,player.y);ctx.lineTo(bx,by);ctx.stroke();
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      var pulse=0.72+Math.sin(Date.now()/190)*0.28;
+      ctx.globalAlpha=pulse;
+      ctx.fillStyle=b.col;
+      ctx.font='bold 17px sans-serif';ctx.textAlign='center';
+      ctx.fillText('▼',bx,by-10);
+      ctx.globalAlpha=1;
+    });
+  }
+}
+
+function drawWrong(){
+  if(wrongAnim>0){
+    ctx.fillStyle='rgba(230,57,70,'+(wrongAnim/60*0.36)+')';
+    ctx.fillRect(0,0,W,H);
+    if(wrongAnim>40){
+      ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText('❌ Lixeira errada! -1 vida',W/2,H/2);
+    }
+  }
+}
+
+function drawTouchUI(){
+  var btns=[
+    {l:'←',x:8,   y:H-108,w:148,h:100,col:'rgba(20,60,20,0.78)'},
+    {l:'→',x:160, y:H-108,w:148,h:100,col:'rgba(20,60,20,0.78)'},
+    {l:'↑',x:W-172,y:H-128,w:164,h:120,col:'rgba(20,50,80,0.78)'},
+    {l:'E',x:W-340,y:H-108,w:160,h:100,col:'rgba(80,55,10,0.78)'},
+  ];
+  btns.forEach(function(b){
+    ctx.globalAlpha=0.85;
+    ctx.fillStyle=b.col;
+    rrect(ctx,b.x,b.y,b.w,b.h,18);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.22)';ctx.lineWidth=2;
+    rrect(ctx,b.x,b.y,b.w,b.h,18);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(255,255,255,0.92)';
+    ctx.font='bold 34px sans-serif';ctx.textAlign='center';
+    ctx.fillText(b.l,b.x+b.w/2,b.y+b.h/2+12);
+  });
+  ctx.globalAlpha=1;
+}
+
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function drawOverlay(t1,t2,btn){
+  ctx.fillStyle='rgba(8,24,8,0.78)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#52b788';ctx.font='bold 52px sans-serif';ctx.textAlign='center';
+  ctx.fillText(pts+' pts',W/2,140);
+  ctx.fillStyle='#fff';ctx.font='bold 24px sans-serif';ctx.fillText(t1,W/2,186);
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='15px sans-serif';ctx.fillText(t2,W/2,216);
+  ctx.fillStyle='#52b788';rrect(ctx,W/2-95,238,190,50,12);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.fillText(btn,W/2,269);
+}
+
+function drawMenu(){
+  drawBg();drawTrees();drawPlats();drawBins();
+  ctx.fillStyle='rgba(8,24,8,0.70)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#52ff7a';ctx.font='bold 38px sans-serif';ctx.textAlign='center';
+  ctx.fillText('O Capitão  ♻',W/2,108);
+  ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='italic 12px sans-serif';
+  ctx.fillText('"Capitão. Ordem dos Resíduos. E esse resto tem servico."',W/2,130);
+  ctx.fillStyle='#fff';ctx.font='15px sans-serif';
+  ctx.fillText('Colete os materiais e descarte na lixeira correta!',W/2,155);
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='12px sans-serif';
+  ctx.fillText('← → mover  |  ↑ / Espaço pular  |  E coletar/descartar',W/2,180);
+  // legenda lixeiras
+  var lx=W/2-205;
+  BINS.forEach(function(b,i){
+    ctx.fillStyle=b.col;ctx.fillRect(lx+i*82,200,16,16);
+    ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText(b.label,lx+i*82+20,213);
+  });
+  ctx.fillStyle='#52b788';rrect(ctx,W/2-92,232,184,50,12);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+  ctx.fillText('▶ Jogar',W/2,263);
+}
+
+// ── LOOP ────────────────────────────────────────────────
+function loop(){
+  if(state==='menu'){drawMenu();requestAnimationFrame(loop);return;}
+  update();
+  ctx.clearRect(0,0,W,H);
+  drawBg();drawTrees();drawBins();drawPlats();
+  drawItems();drawParticles();drawPlayer();
+  drawTouchUI();drawHUD2();drawWrong();
+  if(state==='win')drawOverlay('Missão cumprida! 🎖️','O Capitão limpou tudo! C.O.R. aprovado!','▶ Nova missão');
+  if(state==='gameover')drawOverlay('Missão falhou!','O Capitão fez '+pts+' pontos ♻️','▶ Tentar de novo');
+  requestAnimationFrame(loop);
+}
+
+// ── CONTROLES ───────────────────────────────────────────
+document.addEventListener('keydown',function(e){keys[e.key]=true;if(e.key===' ')e.preventDefault();});
+document.addEventListener('keyup',function(e){keys[e.key]=false;});
+
+CV.addEventListener('click',function(e){
+  var r=CV.getBoundingClientRect(),sc=W/r.width;
+  var mx=(e.clientX-r.left)*sc,my=(e.clientY-r.top)*(H/r.height);
+  if(state!=='playing'&&mx>W/2-92&&mx<W/2+92&&my>232&&my<282)init();
+});
+
+CV.addEventListener('touchstart',function(e){
+  var r=CV.getBoundingClientRect();
+  var scX=W/r.width,scY=H/r.height;
+  Array.from(e.touches).forEach(function(t){
+    var tx=(t.clientX-r.left)*scX,ty=(t.clientY-r.top)*scY;
+    if(state!=='playing'){if(tx>W/2-92&&tx<W/2+92&&ty>232&&ty<282)init();return;}
+    if(tx<160&&ty>H-110)tL=true;
+    if(tx>160&&tx<320&&ty>H-110)tR=true;
+    if(tx>W-180&&ty>H-130)tJ=true;
+    if(tx>W-340&&tx<W-180&&ty>H-110)tE=true;
+  });
+  e.preventDefault();
+},{passive:false});
+CV.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
+CV.addEventListener('touchend',function(e){
+  if(e.touches.length===0){tL=false;tR=false;tJ=false;tE=false;}
+  else{
+    tL=false;tR=false;tJ=false;tE=false;
+    var r=CV.getBoundingClientRect();
+    var scX=W/r.width,scY=H/r.height;
+    Array.from(e.touches).forEach(function(t){
+      var tx=(t.clientX-r.left)*scX,ty=(t.clientY-r.top)*scY;
+      if(tx<160&&ty>H-110)tL=true;
+      if(tx>160&&tx<320&&ty>H-110)tR=true;
+      if(tx>W-180&&ty>H-130)tJ=true;
+      if(tx>W-340&&tx<W-180&&ty>H-110)tE=true;
+    });
+  }
+});
+
+loop();
+
+</script>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>&copy; 2026 <span>EcoMapa</span> &mdash; Reciclagem que inspira &#9851;</p>
+</div>
+
+<!-- MODAL TUTORIAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <h3 id="modalTitulo"></h3>
+    <div id="modalBody"></div>
+    <button class="btn-fechar" id="modalFechar">Fechar</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var tutoriais = [
+  {
+    id:"reciclagem_game", categoria:"jogo", emoji:"♻️", tag:"🎮 Jogo Digital",
+    titulo:"Coleta Seletiva — Triple Match",
+    desc:"Combine 3 iguais e recicle! Plástico, metal, vidro, eletrônicos e alimentos.",
+    tipo:"jogo_interno"
+  },
+  {
+    id:"capitao_cor", categoria:"jogo", emoji:"🦺", tag:"🎮 Jogo Digital",
+    titulo:"O Capitão — Ordem dos Resíduos",
+    desc:"Ajude o Capitão C.O.R. a coletar e descartar cada resíduo na lixeira correta!",
+    tipo:"capitao"
+  },
+  {
+    id:"robo", categoria:"brinquedo", emoji:"🤖", tag:"Brinquedo",
+    titulo:"Robô com garrafa PET",
+    desc:"Ver tutorial no YouTube",
+    tipo:"youtube",
+    url:"https://youtube.com/shorts/RvwX9z6k5gM"
+  },
+  {
+    id:"carrinho", categoria:"brinquedo", emoji:"🚗", tag:"Brinquedo",
+    titulo:"Carrinho de garrafa PET",
+    desc:"Ver tutorial no YouTube",
+    tipo:"youtube",
+    url:"https://youtube.com/shorts/E4xW1pe3Ayg"
+  },
+  {
+    id:"tartaruga", categoria:"artesanato", emoji:"🐢", tag:"Artesanato",
+    titulo:"Tartaruga com caixa de ovo",
+    desc:"Ver tutorial no YouTube",
+    tipo:"youtube",
+    url:"https://www.youtube.com/shorts/M3hAi1X2p-0"
+  },
+  {
+    id:"horta_pet", categoria:"horta", emoji:"🌱", tag:"Horta",
+    titulo:"7 Hortas com Garrafa PET",
+    desc:"Hortaliças e temperos em espaços pequenos",
+    tipo:"youtube",
+    url:"https://www.youtube.com/shorts/9HPDxk285tw"
+  },
+  {
+    id:"horta_vertical", categoria:"horta", emoji:"🥬", tag:"Horta",
+    titulo:"Horta Vertical — Alta Produtividade",
+    desc:"Alta produtividade com garrafas PET",
+    tipo:"youtube",
+    url:"https://www.youtube.com/watch?v=dz_zgldkRKI"
+  }
+];
+
+var filtroAtual = "todos";
+
+function renderGrid(filtro) {
+  var lista = filtro === "todos" ? tutoriais : tutoriais.filter(function(t){ return t.categoria === filtro; });
+  var grid = document.getElementById("artGrid");
+  if (lista.length === 0) {
+    grid.innerHTML = '<div class="art-empty"><i class="fas fa-paint-brush"></i><p>Nenhum tutorial nesta categoria ainda. Em breve!</p></div>';
+    return;
+  }
+  grid.innerHTML = "";
+  lista.forEach(function(t){
+    var div = document.createElement("div");
+    div.className = "art-card";
+    div.setAttribute("data-id", t.id);
+    var ytId = (function(u){ if(!u) return ''; var m = u.match(/(?:shorts\/|embed\/|watch\?v=)([A-Za-z0-9_-]+)/); return m ? m[1] : u.split('/').pop().split('?')[0]; })(t.url);
+    var thumbHtml = t.tipo === 'youtube'
+      ? '<div class="art-thumb yt-thumb"><img src="https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg" alt="'+t.titulo+'" loading="lazy"><div class="art-play-btn"><i class="fab fa-youtube"></i></div></div>'
+      : '<div class="art-thumb"><div class="art-play-btn"><i class="fas fa-paint-brush"></i></div><span class="art-bg-emoji">'+t.emoji+'</span></div>';
+    div.innerHTML =
+      thumbHtml+
+      '<div class="art-body">'+
+        '<span class="art-tag">'+t.tag+'</span>'+
+        '<h4>'+t.titulo+'</h4>'+
+        '<p>'+t.desc+'</p>'+
+      '</div>';
+    div.addEventListener("click", function(){
+      var id = this.getAttribute("data-id");
+      var tut = tutoriais.find(function(x){ return x.id === id; });
+      if (!tut) return;
+      if (tut.tipo === "youtube") {
+        window.open(tut.url, "_blank", "noopener,noreferrer");
+      } else {
+        abrirTutorial(tut);
+      }
+    });
+    grid.appendChild(div);
+  });
+}
+
+function abrirTutorial(tut) {
+  var stepIndex = 0;
+  function render() {
+    var s = tut.passos[stepIndex];
+    var total = tut.passos.length;
+    document.getElementById("modalTitulo").textContent = tut.titulo;
+    document.getElementById("modalBody").innerHTML =
+      '<div class="materiais-box"><strong>🔧 Materiais:</strong>'+tut.materiais+'</div>'+
+      '<div>'+
+        s.svg+
+        '<h4>Passo '+(stepIndex+1)+': '+s.titulo+'</h4>'+
+        '<p>'+s.desc+'</p>'+
+        '<div class="tut-nav">'+
+          '<button class="tut-btn" id="tutAnterior"'+(stepIndex===0?' disabled':'')+'>← Anterior</button>'+
+          '<span class="tut-counter">'+(stepIndex+1)+' / '+total+'</span>'+
+          '<button class="tut-btn" id="tutProximo"'+(stepIndex===total-1?' disabled':'')+'>Próximo →</button>'+
+        '</div>'+
+      '</div>';
+  }
+  render();
+  document.getElementById("modal").classList.add("open");
+  document.getElementById("modalBody").addEventListener("click", function(e){
+    if (e.target.id === "tutAnterior" && stepIndex > 0){ stepIndex--; render(); }
+    if (e.target.id === "tutProximo" && stepIndex < tut.passos.length-1){ stepIndex++; render(); }
+  });
+}
+
+document.getElementById("modalClose").addEventListener("click", function(){ document.getElementById("modal").classList.remove("open"); });
+document.getElementById("modalFechar").addEventListener("click", function(){ document.getElementById("modal").classList.remove("open"); });
+document.getElementById("modal").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("open"); });
+
+document.querySelectorAll(".filtro-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    document.querySelectorAll(".filtro-btn").forEach(function(b){ b.classList.remove("active"); });
+    this.classList.add("active");
+    filtroAtual = this.getAttribute("data-filtro");
+    renderGrid(filtroAtual);
+  });
+});
+
+// Handle game card click
+function handleCardClick(tut) {
+  if (tut.tipo === "youtube") {
+    window.open(tut.url, "_blank", "noopener,noreferrer");
+  } else if (tut.tipo === "jogo_interno" || tut.tipo === "capitao") {
+    abrirJogo();
+  } else {
+    abrirTutorial(tut);
+  }
+}
+
+// Override renderGrid to handle game card
+var _origRender = renderGrid;
+renderGrid = function(filtro) {
+  var lista = filtro === "todos" ? tutoriais : tutoriais.filter(function(t){ return t.categoria === filtro; });
+  var grid = document.getElementById("artGrid");
+  if (lista.length === 0) {
+    grid.innerHTML = '<div class="art-empty"><i class="fas fa-paint-brush"></i><p>Nenhum tutorial nesta categoria ainda. Em breve!</p></div>';
+    return;
+  }
+  grid.innerHTML = "";
+  lista.forEach(function(t){
+    var div = document.createElement("div");
+    div.className = "art-card";
+    div.setAttribute("data-id", t.id);
+    var ytId = (function(u){ if(!u) return ''; var m = u.match(/(?:shorts\/|embed\/|watch\?v=)([A-Za-z0-9_-]+)/); return m ? m[1] : u.split('/').pop().split('?')[0]; })(t.url);
+    var thumbHtml;
+    if (t.tipo === 'youtube') {
+      thumbHtml = '<div class="art-thumb yt-thumb"><img src="https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg" alt="'+t.titulo+'" loading="lazy"><div class="art-play-btn"><i class="fab fa-youtube"></i></div></div>';
+    } else if (t.tipo === 'jogo_interno') {
+      thumbHtml = '<div class="art-thumb game-thumb"><div class="game-thumb-emoji">'+t.emoji+'</div></div>';
+    } else {
+      thumbHtml = '<div class="art-thumb"><div class="art-play-btn"><i class="fas fa-paint-brush"></i></div><span class="art-bg-emoji">'+t.emoji+'</span></div>';
+    }
+    div.innerHTML = thumbHtml + '<div class="art-body"><span class="art-tag">'+t.tag+'</span><h4>'+t.titulo+'</h4><p>'+t.desc+'</p></div>';
+    div.addEventListener("click", function(){
+      var id = this.getAttribute("data-id");
+      var tut = tutoriais.find(function(x){ return x.id === id; });
+      if (!tut) return;
+      handleCardClick(tut);
+    });
+    grid.appendChild(div);
+  });
+};
+
+function abrirJogo() {
+  document.getElementById("gameModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+  if(typeof init==='function') setTimeout(init, 80);
+  if (window.innerWidth < 768) {
+    var el = document.getElementById("gameModal");
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock('landscape').catch(function(){});
+    }
+  }
+}
+function fecharJogo() {
+  document.getElementById("gameModal").classList.remove("open");
+  document.body.style.overflow = "";
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+  if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+}
+function toggleFullscreen() {
+  var el = document.getElementById("gameModal");
+  var btn = document.getElementById("fsBtn");
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg> Sair';
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Tela cheia';
+  }
+}
+document.addEventListener("fullscreenchange", function(){
+  if (!document.fullscreenElement) {
+    var btn = document.getElementById("fsBtn");
+    if (btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Tela cheia';
+  }
+});
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape") fecharJogo();
+});
+
+renderGrid("todos");
+</script>
+</body>
+</html>
