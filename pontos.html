@@ -504,7 +504,7 @@ function tentarGeo() {
       box.innerHTML='<i class="fas fa-circle-exclamation"></i><span>Não foi possível obter sua localização. Verifique as permissões do navegador.</span>';
       renderPontos(filtroAtual, document.getElementById("buscaInput").value);
     },
-    { enableHighAccuracy:true, timeout:10000 }
+   { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
   );
 }
 
