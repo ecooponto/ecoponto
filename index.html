@@ -2490,15 +2490,7 @@ initGalaxy('footer-galaxy');
   if (!btn) return;
   btn.addEventListener('click', function(e){
     e.preventDefault();
-    var modal = document.getElementById('geoPermModal');
-    modal.style.display = 'flex';
-    document.getElementById('geoPermSim').onclick = function(){
-      modal.style.display = 'none';
-      window.location.href = 'pontos.html';
-    };
-    document.getElementById('geoPermNao').onclick = function(){
-      modal.style.display = 'none';
-      window.location.href = 'pontos.html';
+   window.location.href = 'pontos.html';
     };
   });
 })();
