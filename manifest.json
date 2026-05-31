@@ -1,0 +1,16 @@
+{
+  "name": "EcoMapa",
+  "short_name": "EcoMapa",
+  "description": "Reciclagem que gera renda",
+  "start_url": "/ecoponto/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#388E3C",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
